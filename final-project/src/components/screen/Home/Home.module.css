@@ -1,16 +1,14 @@
-.containerPrincipal{
-    height: 100%;
-    width: 100%;
-    display: flex;
-    background-color: #d9d9d9;
+.containerPrincipal {
+  font-family: roboto;
+  background-color: #1b5939;
+  width: 20vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-.containerLeft{
- background-color: #1B5939;   
- width: 25vw;
- height: 100vh;
- padding: auto;
- display: flex;
- justify-content: center;
- color: white;
+.containerTitle {
+  color: white;
+  padding: 0.4rem;
+  margin-top: 3rem;
 }
