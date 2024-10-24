@@ -1,9 +1,11 @@
 import { Home } from "./components/screen/Home/Home";
+import { Sucursal } from "./components/screen/Sucursal/Sucursal";
 
 function App() {
 	return (
 		<div>
-			<Home />
+			{/* <Home /> */}
+			<Sucursal/>
 		</div>
 	);
 }
