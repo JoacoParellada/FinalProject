@@ -1,0 +1,13 @@
+.containerCard {
+  margin: 1rem;
+  padding: 0.5rem;
+  border: 1px solid black;
+}
+.bodyCard {
+  text-align: center;
+}
+.containerButtons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
