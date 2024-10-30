@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { Empresa } from "../../interfaces/Empresa";
 import styles from "./CardEmpresa.module.css";
 import { ModalVerEmpresa } from "../modals/ModalVerEmpresa/ModalVerEmpresa";
+import { ModalEditarEmpresa } from "../modals/ModalEditarEmpresa/ModalEditarEmpresa";
 
 interface CardEmpresaProps {
   empresa: Empresa;
@@ -10,7 +11,25 @@ interface CardEmpresaProps {
 
 export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
+  useEffect(() => {
+    const empresasGuardadas = JSON.parse(localStorage.getItem("empresas") || "[]");
+    setEmpresas(empresasGuardadas);
+  }, []);
+
+  const handleSave = (empresaEditada: Empresa) => {
+    const nuevasEmpresas = empresas.map(emp => 
+        emp.cuit === empresaEditada.cuit ? empresaEditada : emp
+    );
+    setEmpresas(nuevasEmpresas);
+    localStorage.setItem("empresas", JSON.stringify(nuevasEmpresas));
+};
+
+  
+
+  
   return (
     <Card className="m-4 p-2 bg-white">
       <Card.Body className={styles.bodyCard}>
@@ -32,6 +51,7 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa }) => {
             <span
               className="material-symbols-outlined"
               style={{ color: "black" }}
+              onClick={() => setShowModalEdit(true)}
             >
               edit
             </span>
@@ -43,6 +63,14 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa }) => {
         handleClose={() => setShowModal(false)}
         empresa={empresa}
       />
+
+      <ModalEditarEmpresa
+        show={showModalEdit}
+        handleClose={() => setShowModalEdit(false)}
+        onSave={handleSave}
+        empresaInicial={empresa}
+      />
+      
     </Card>
   );
 };
