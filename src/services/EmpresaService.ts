@@ -11,6 +11,17 @@ IEmpresa | ICreateEmpresaDto | IUpdateEmpresaDto
     constructor(baseUrl: string) { 
         super(`${API_URL}/${baseUrl}`)
     }
+
+    async getAllEmpresas(): Promise<IEmpresa[]> {
+        const response = await fetch(`http://190.221.207.224:8090/empresas`);
+        if(!response.ok) {
+            throw new Error(`Error`);
+        }
+        const data = await response.json();
+        return data as IEmpresa[];
+    }
 }
+
+
 
 

@@ -1,11 +1,11 @@
 import { Modal } from "react-bootstrap";
-import { Empresa } from "../../../interfaces/Empresa";
 import { FC } from "react";
+import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 
 interface ModalVerEmpresaProps {
   showModal: boolean;
   handleClose: () => void;
-  empresa: Empresa;
+  empresa: IEmpresa;
 }
 
 export const ModalVerEmpresa: FC<ModalVerEmpresaProps> = ({

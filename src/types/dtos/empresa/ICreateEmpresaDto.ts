@@ -1,6 +1,6 @@
 export interface ICreateEmpresaDto {
   nombre: string;
   razonSocial: string;
-  cuit: number;
+  cuit: string;
   logo: string | null;
 }
