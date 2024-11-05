@@ -1,8 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-// ...
+import empresasReducer from "../slices/empresasSlice"
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    empresas: empresasReducer,
+
+  },
 });
 
 // Infer the `RootState`,  `AppDispatch`, and `AppStore` types from the store itself

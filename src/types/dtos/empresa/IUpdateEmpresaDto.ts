@@ -3,6 +3,6 @@ import { baseDto } from "../baseDto/baseDto";
 export interface IUpdateEmpresaDto extends baseDto {
   nombre: string;
   razonSocial: string;
-  cuit: number;
+  cuit: string;
   logo: string | null;
 }

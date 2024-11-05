@@ -1,16 +1,11 @@
 import { FC, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
-import style from "./ModalAgregarEmpresa.module.css";
+import { Button, Modal, Form } from "react-bootstrap";
+import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 
 interface ModalAgregarEmpresaProps {
   show: boolean;
   handleClose: () => void;
-  onSave: (empresa: {
-    nombre: string;
-    razonSocial: string;
-    cuit: string;
-    logo: string;
-  }) => void;
+  onSave: (empresa: IEmpresa) => void;
 }
 
 export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
@@ -18,16 +13,20 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
   handleClose,
   onSave,
 }) => {
-  const [empresa, setEmpresa] = useState({
+  const [nuevaEmpresa, setNuevaEmpresa] = useState<IEmpresa>({
+    id: 0, // This will be set by the backend
     nombre: "",
     razonSocial: "",
     cuit: "",
     logo: "",
+    sucursales: [],
+    pais: null,
+    
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEmpresa((prev) => ({
+    setNuevaEmpresa((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -38,79 +37,82 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () =>
-        setEmpresa((prev) => ({ ...prev, logo: reader.result as string }));
+        setNuevaEmpresa((prev) => ({ ...prev, logo: reader.result as string }));
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = () => {
-    onSave(empresa);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSave(nuevaEmpresa);
     handleClose();
+    // Reset form
+    setNuevaEmpresa({
+      id: 0,
+      nombre: "",
+      razonSocial: "",
+      cuit: "",
+      logo: null,
+      sucursales: [],
+      pais: null,
+    });
   };
 
   return (
     <Modal show={show} onHide={handleClose}>
-      <Modal.Header className={style.modalHeader}>
-        <Modal.Title>Agregar Empresa</Modal.Title>
+      <Modal.Header closeButton>
+        <Modal.Title>Agregar Nueva Empresa</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <form>
-          <div className="mb-3">
-            <input
+      <Form onSubmit={handleSubmit}>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Nombre</Form.Label>
+            <Form.Control
               type="text"
-              className="form-control"
-              placeholder="Ingrese un nombre"
               name="nombre"
-              required
+              value={nuevaEmpresa.nombre}
               onChange={handleChange}
+              required
             />
-          </div>
-          <div className="mb-3">
-            <input
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Razón Social</Form.Label>
+            <Form.Control
               type="text"
-              className="form-control"
-              placeholder="Ingrese razon social"
               name="razonSocial"
-              required
+              value={nuevaEmpresa.razonSocial}
               onChange={handleChange}
+              required
             />
-          </div>
-          <div className="mb-3">
-            <input
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>CUIT</Form.Label>
+            <Form.Control
               type="text"
-              className="form-control"
-              placeholder="Ingrese CUIT"
               name="cuit"
-              required
+              value={nuevaEmpresa.cuit}
               onChange={handleChange}
+              required
             />
-          </div>
-          <div className="mb-3">
-            <input
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Logo</Form.Label>
+            <Form.Control
               type="file"
-              className="form-control"
-              placeholder="Ingrese una imagen"
               onChange={handleImageChange}
+              accept="image/*"
             />
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer className={style.modalFooter}>
-        <Button
-          variant="danger"
-          className={style.closeButton}
-          onClick={handleClose}
-        >
-          CERRAR
-        </Button>
-        <Button
-          variant="success"
-          className={style.confirmButton}
-          onClick={handleSave}
-        >
-          CONFIRMAR
-        </Button>
-      </Modal.Footer>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" type="submit">
+            Guardar
+          </Button>
+        </Modal.Footer>
+      </Form>
     </Modal>
   );
 };

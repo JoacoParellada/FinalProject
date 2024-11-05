@@ -1,22 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import style from "./ModalEditarEmpresa.module.css"
+import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 
 interface ModalEditarEmpresaProps {
     show: boolean;
     handleClose: () => void;
-    onSave: (empresa: {
-        nombre: string;
-        razonSocial: string;
-        cuit: string;
-        logo: string;
-    }) => void;
-    empresaInicial: {
-        nombre: string;
-        razonSocial: string;
-        cuit: string;
-        logo: string;
-    };
+    onSave: (empresa: IEmpresa) => void;
+    empresaInicial: IEmpresa;
 }
 
 export const ModalEditarEmpresa: FC<ModalEditarEmpresaProps> = ({

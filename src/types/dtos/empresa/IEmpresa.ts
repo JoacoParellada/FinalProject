@@ -5,8 +5,8 @@ export interface IEmpresa {
   id: number;
   nombre: string;
   razonSocial: string;
-  cuit: number;
+  cuit: string;
   logo: string | null;
   sucursales: ISucursal[];
-  pais: IPais;
+  pais: null | IPais;
 }
