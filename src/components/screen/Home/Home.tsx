@@ -6,10 +6,14 @@ import { CardEmpresa } from "../../CardEmpresa/CardEmpresa";
 import { EmpresaService } from "../../../services/EmpresaService";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 
+
+
+
 export const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
   const empresaService = new EmpresaService("empresas")
+
 
   const fetchEmpresas = async () => {
     try {
@@ -24,13 +28,12 @@ export const Home = () => {
 
 
   useEffect(() => {
-    
-
   fetchEmpresas();
   }, []);
 
-const handleShow = () => setShowModal(true);
-const handleClose = () => setShowModal(false);
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
 
   const handleSave = async (nuevaEmpresa: IEmpresa) => {
     try {
@@ -40,8 +43,10 @@ const handleClose = () => setShowModal(false);
     } catch (error) {
       console.log("Error saving new empresa:", error);
     }
-
   };
+
+
+
 
   return (
     <div className={styles.containerPrincipal}>
