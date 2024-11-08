@@ -45,4 +45,4 @@ export class EmpresaService extends BackendClient<IEmpresa> {
 		const updateData = await response.json();
 		return updateData as IEmpresa;
 	}
-}
+
