@@ -7,9 +7,10 @@ import { ModalEditarEmpresa } from "../modals/ModalEditarEmpresa/ModalEditarEmpr
 
 interface CardEmpresaProps {
   empresa: IEmpresa;
+  onSelect: () => void;
 }
 
-export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa }) => {
+export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
 
@@ -18,22 +19,53 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa }) => {
     console.log("Empresa editada:", empresaEditada);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Verificar si el clic no fue en un botón
+    if (!(e.target as Element).closest("button")) {
+      onSelect();
+    }
+  };
+
+  const preventPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <Card className="m-4 p-2 bg-white">
+    <Card
+      className={styles.containerCard}
+      style={{ cursor: "pointer" }}
+      onClick={handleCardClick}
+    >
       <Card.Body className={styles.bodyCard}>
         <Card.Title className="text-black">{empresa.nombre}</Card.Title>
-        <div className={styles.containerButtons}>
+        <div className={styles.containerButtons} onClick={preventPropagation}>
           <Button
             className="d-flex align-items-center"
-            onClick={() => setShowModal(true)}
+            onClick={(e) => {
+              preventPropagation(e);
+              setShowModal(true);
+            }}
             variant="warning"
           >
-            <span className="material-symbols-outlined" style={{ color: "black" }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ color: "black" }}
+            >
               visibility
             </span>
           </Button>
-          <Button className="d-flex align-items-center" variant="primary" onClick={() => setShowModalEdit(true)}>
-            <span className="material-symbols-outlined" style={{ color: "black" }}>
+          <Button
+            className="d-flex align-items-center"
+            variant="primary"
+            onClick={(e) => {
+              preventPropagation(e);
+              setShowModalEdit(true);
+            }}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ color: "black" }}
+            >
               edit
             </span>
           </Button>
