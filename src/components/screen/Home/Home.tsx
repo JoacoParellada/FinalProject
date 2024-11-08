@@ -12,7 +12,7 @@ import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 export const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
-  const empresaService = new EmpresaService("empresas")
+  const empresaService = new EmpresaService()
 
 
   const fetchEmpresas = async () => {
