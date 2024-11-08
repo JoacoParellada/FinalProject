@@ -24,9 +24,6 @@ export const Home = () => {
     null
   );
 
-  const empresaService = new EmpresaService()
-
-
   const empresaService = new EmpresaService("empresas");
   const sucursalService = new SucursalService();
 
