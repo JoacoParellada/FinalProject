@@ -17,11 +17,15 @@ export const Home = () => {
   const [showModalEmpresa, setShowModalEmpresa] = useState(false);
   const [showModalSucursal, setShowModalSucursal] = useState(false);
   const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
+
   const [selectedEmpresa, setSelectedEmpresa] = useState<IEmpresa | null>(null);
   const [sucursales, setSucursales] = useState<ISucursal[]>([]);
   const [selectedSucursal, setSelectedSucursal] = useState<ISucursal | null>(
     null
   );
+
+  const empresaService = new EmpresaService()
+
 
   const empresaService = new EmpresaService("empresas");
   const sucursalService = new SucursalService();

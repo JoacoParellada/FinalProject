@@ -30,6 +30,7 @@ export class EmpresaService extends BackendClient<IEmpresa> {
     return newData as IEmpresa;
   }
 
+
   async updateEmpresa(
     idEmpresa: number,
     data: IUpdateEmpresaDto
@@ -45,4 +46,5 @@ export class EmpresaService extends BackendClient<IEmpresa> {
     const updateData = await response.json();
     return updateData as IEmpresa;
   }
+
 }
