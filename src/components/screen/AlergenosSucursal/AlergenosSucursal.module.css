@@ -1,0 +1,12 @@
+.headerContainer {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    padding: 1rem;
+    width: 60%;
+}
+
+.listAlergenos{
+    border: 2px solid #000;
+    border-radius: 0.8rem;
+}

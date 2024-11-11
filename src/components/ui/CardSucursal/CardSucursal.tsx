@@ -1,7 +1,7 @@
 // src/components/SucursalCard/SucursalCard.tsx
 import React from "react";
 import { Card, Button } from "react-bootstrap";
-import { ISucursal } from "../../types/dtos/sucursal/ISucursal";
+import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import styles from "./CardSucursal.module.css";
 
 interface CardSucursalProps {

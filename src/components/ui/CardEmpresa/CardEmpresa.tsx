@@ -1,9 +1,9 @@
 import { FC, useState } from "react";
 import { Button, Card } from "react-bootstrap";
-import { IEmpresa } from "../../types/dtos/empresa/IEmpresa";
+import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 import styles from "./CardEmpresa.module.css";
-import { ModalVerEmpresa } from "../modals/ModalVerEmpresa/ModalVerEmpresa";
-import { ModalEditarEmpresa } from "../modals/ModalEditarEmpresa/ModalEditarEmpresa";
+import { ModalVerEmpresa } from "../../modals/ModalVerEmpresa/ModalVerEmpresa";
+import { ModalEditarEmpresa } from "../../modals/ModalEditarEmpresa/ModalEditarEmpresa";
 
 interface CardEmpresaProps {
   empresa: IEmpresa;

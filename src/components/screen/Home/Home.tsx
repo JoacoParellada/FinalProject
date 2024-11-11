@@ -2,16 +2,18 @@ import { Button, Navbar } from "react-bootstrap";
 import styles from "./Home.module.css";
 import { ModalAgregarEmpresa } from "../../modals/modalAgregarEmpresa/ModalAgregarEmpresa";
 import { useState, useEffect } from "react";
-import { CardEmpresa } from "../../CardEmpresa/CardEmpresa";
+
 import { EmpresaService } from "../../../services/EmpresaService";
 import { SucursalService } from "../../../services/SucursalService";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { HeaderEmpresa } from "../HeaderEmpresa/HeaderEmpresa";
-import { CardSucursal } from "../../CardSucursal/CardSucursal";
+
 import { ModalAgregarSucursal } from "../../modals/ModalAgregarSucursal/ModalAgregarSucursal";
 import { ModalVerSucursal } from "../../modals/ModalVerSucursal/ModalVerSucursal";
 import { ICreateSucursal } from "../../../types/dtos/sucursal/ICreateSucursal";
+import { CardEmpresa } from "../../ui/CardEmpresa/CardEmpresa";
+import { CardSucursal } from "../../ui/CardSucursal/CardSucursal";
 
 export const Home = () => {
   const [showModalEmpresa, setShowModalEmpresa] = useState(false);
@@ -24,7 +26,7 @@ export const Home = () => {
     null
   );
 
-  const empresaService = new EmpresaService("empresas");
+  const empresaService = new EmpresaService();
   const sucursalService = new SucursalService();
 
   const fetchEmpresas = async () => {
