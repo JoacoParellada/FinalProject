@@ -24,12 +24,37 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = () => {
                     }}
                 >
                     <span className="material-symbols-outlined">add</span>
-                    Agregar un producto
+                    Agregar una categoria
             </Button>
         </div>
         <div>
             <ListGroup>
-                <ListGroup.Item className={styles.categoriaElement}></ListGroup.Item>
+                <ListGroup.Item 
+                className={styles.categoriaElement}
+                >
+                    <Button
+                        className="d-flex align-items-center"
+                        variant="warning"
+                        >
+                        <span
+                        className="material-symbols-outlined"
+                        style={{ color: "black" }}
+                        >
+                        visibility
+                        </span>
+                    </Button>
+                    <Button
+                        className="d-flex align-items-center"
+                        variant="primary"
+                    >
+                        <span
+                        className="material-symbols-outlined"
+                        style={{ color: "black" }}
+                        >
+                        edit
+                        </span>
+                    </Button>
+                </ListGroup.Item>
             </ListGroup>
         </div>
     </div>

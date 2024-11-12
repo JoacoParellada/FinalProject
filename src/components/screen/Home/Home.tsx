@@ -149,7 +149,7 @@ export const Home = () => {
         show={showModalSucursal}
         handleClose={handleCloseSucursal}
         onSave={handleSaveSucursal}
-        idEmpresa={selectedEmpresa?.id || 0} // Pasa el id de la empresa al modal
+        idEmpresa={selectedEmpresa?.id || 0} 
       />
       {selectedSucursal && (
         <ModalVerSucursal

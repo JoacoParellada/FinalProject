@@ -4,20 +4,27 @@ import { Card, Button } from "react-bootstrap";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import styles from "./CardSucursal.module.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSucursalActivo } from "../../../redux/slices/SucursalReducer";
 
 interface CardSucursalProps {
   sucursal: ISucursal;
   onSelect?: () => void;
 }
 
+
+
 export const CardSucursal: React.FC<CardSucursalProps> = ({
   sucursal,
   onSelect,
 }) => {
 
+
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const handleClick = () => {
+    dispatch(setSucursalActivo({sucursalActivo: sucursal}))
     navigate('/sucursal');
   };
 

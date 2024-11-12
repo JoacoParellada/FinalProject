@@ -45,7 +45,7 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
               setShowModal(true);
             }}
             variant="warning"
-          >
+            >
             <span
               className="material-symbols-outlined"
               style={{ color: "black" }}
