@@ -1,17 +1,13 @@
 import { Button } from "react-bootstrap"
 import styles from "./Sucursal.module.css"
-import { FC, useState } from "react";
+import { useState } from "react";
 import { AlergenosSucursal } from "../AlergenosSucursal/AlergenosSucursal";
 import { ProductosSucursal } from "../ProductosSucursal/ProductosSucursal";
 import { useNavigate } from "react-router-dom";
 import { CategoriasSucursal } from "../CategoriasSucursal/CategoriasSucursal";
-import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
-import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store/store";
 
-interface SucursalProps{
-    empresa : IEmpresa
-    sucursal : ISucursal
-}
 
 export const Sucursal = () => {
 
@@ -19,6 +15,7 @@ export const Sucursal = () => {
     const [showProductos, setShowProductos] = useState(false)
     const [showCategorias, setShowCategorias] = useState(false)
     const navigate = useNavigate()
+    const sucursalActivo = useSelector((state: RootState) => state.sucursal.sucursalActivo);
 
     const handleShowProductos = () => {
         setShowAlergenos(false)
@@ -59,7 +56,7 @@ export const Sucursal = () => {
                         arrow_back
                     </span>
                 </Button>
-                <h2 style={{paddingTop:"1.3vh"}}>EMPRESA - SUCURSAL</h2>
+                <h2 style={{paddingTop:"1.3vh"}}>{sucursalActivo?.nombre}</h2>
             </div>
             <div className={styles.container}>
                 <div className={styles.navSucursal}>

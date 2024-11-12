@@ -13,4 +13,5 @@
 .categoriaElement{
     height: 8vh;
     border: 1px solid;
+    display: flex;
 }
