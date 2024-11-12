@@ -1,0 +1,16 @@
+.homeCategorias{
+    width: 90%;
+}
+
+
+
+.buttonCategorias{
+    height: 6vh;
+    margin-bottom: 2%;
+}
+
+
+.categoriaElement{
+    height: 8vh;
+    border: 1px solid;
+}
