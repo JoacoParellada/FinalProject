@@ -45,12 +45,12 @@ export const Sucursal = () => {
 
     
 
-    <div className={styles.mainSucursal}>
+    <div>
         <div className={styles.mainSucursal}>
             <div className={styles.headerSucursal}>
                 <Button 
                     onClick={handleBack}
-                    style={{width:"60px", display:"flex", justifyContent:"center", alignItems:"center", margin:"0.5rem 1.5rem", border:"solid 1px" }} 
+                    style={{width:"60px", height:"5vh", display:"flex", justifyContent:"center", alignItems:"center", margin:"0.5rem 1.5rem", border:"solid 1px" }} 
                     variant="dark">
                     <span className="material-symbols-outlined">
                         arrow_back
@@ -69,7 +69,7 @@ export const Sucursal = () => {
                 </div>
                 <div className={styles.content}>
                     <div className={styles.tableAlergenos}>
-                        {showProductos && <ProductosSucursal onSelect={() => setShowAlergenos(true)} />}
+                        {showProductos && <ProductosSucursal sucursal={sucursalActivo} onSelect={() => setShowAlergenos(true)} />}
                         {showAlergenos && <AlergenosSucursal onSelect={() => setShowAlergenos(true)} />} 
                         {showCategorias && <CategoriasSucursal onSelect={() => setShowAlergenos(true)} />} 
                     </div>
