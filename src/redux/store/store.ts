@@ -5,7 +5,7 @@ import ImageReducer from "../slices/ImageReducer";
 
 export const store = configureStore({
 	reducer: {
-		empresas: empresasReducer,
+		empresa: empresasReducer,
 		sucursal: SucursalReducer,
 		image: ImageReducer,
 	},

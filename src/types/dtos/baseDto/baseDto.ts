@@ -1,4 +1,4 @@
 export interface baseDto {
-  id: number;
+  id?: number;
   eliminado?: boolean;
 }

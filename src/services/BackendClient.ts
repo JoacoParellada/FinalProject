@@ -33,6 +33,7 @@ export abstract class BackendClient<T> extends AbstractBackendClient<T> {
 			},
 			body: JSON.stringify(data),
 		});
+
 		const newData = await response.json();
 		return newData as T;
 	}
