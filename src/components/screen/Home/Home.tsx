@@ -1,4 +1,4 @@
-import { Button, Navbar } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import styles from "./Home.module.css";
 import { ModalAgregarEmpresa } from "../../modals/modalAgregarEmpresa/ModalAgregarEmpresa";
 import { useState, useEffect } from "react";
