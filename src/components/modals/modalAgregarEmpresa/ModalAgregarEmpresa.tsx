@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
+import { ICreateEmpresaDto } from "../../../types/dtos/empresa/ICreateEmpresaDto";
 
 interface ModalAgregarEmpresaProps {
   show: boolean;
   handleClose: () => void;
-  onSave: (empresa: IEmpresa) => void;
+  onSave: (empresa: ICreateEmpresaDto) => void;
 }
 
 export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
@@ -13,15 +13,11 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
   handleClose,
   onSave,
 }) => {
-  const [nuevaEmpresa, setNuevaEmpresa] = useState<IEmpresa>({
-    id: 0, // This will be set by the backend
+  const [nuevaEmpresa, setNuevaEmpresa] = useState<ICreateEmpresaDto>({
     nombre: "",
     razonSocial: "",
     cuit: "",
-    logo: "",
-    sucursales: [],
-    pais: null,
-    
+    logo: null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,15 +42,11 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
     e.preventDefault();
     onSave(nuevaEmpresa);
     handleClose();
-    // Reset form
     setNuevaEmpresa({
-      id: 0,
       nombre: "",
       razonSocial: "",
       cuit: "",
       logo: null,
-      sucursales: [],
-      pais: null,
     });
   };
 
