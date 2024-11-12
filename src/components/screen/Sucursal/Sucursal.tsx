@@ -1,26 +1,46 @@
 import { Button } from "react-bootstrap"
 import styles from "./Sucursal.module.css"
-import { useState } from "react";
+import { FC, useState } from "react";
 import { AlergenosSucursal } from "../AlergenosSucursal/AlergenosSucursal";
 import { ProductosSucursal } from "../ProductosSucursal/ProductosSucursal";
+import { useNavigate } from "react-router-dom";
+import { CategoriasSucursal } from "../CategoriasSucursal/CategoriasSucursal";
+import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
+import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 
+interface SucursalProps{
+    empresa : IEmpresa
+    sucursal : ISucursal
+}
 
 export const Sucursal = () => {
 
     const [showAlergenos, setShowAlergenos] = useState(false)
     const [showProductos, setShowProductos] = useState(false)
-    
+    const [showCategorias, setShowCategorias] = useState(false)
+    const navigate = useNavigate()
 
     const handleShowProductos = () => {
         setShowAlergenos(false)
+        setShowCategorias(false)
         setShowProductos(true)
     }
 
     const handleShowAlergenos = () => {
         setShowProductos(false)
+        setShowCategorias(false)
         setShowAlergenos(true)
     }
 
+    const handleShowCategorias = () => {
+        setShowAlergenos(false)
+        setShowProductos(false)
+        setShowCategorias(true)
+    }
+
+    const handleBack = () => {
+        navigate('/'); 
+    };
     
 
 
@@ -32,6 +52,7 @@ export const Sucursal = () => {
         <div className={styles.mainSucursal}>
             <div className={styles.headerSucursal}>
                 <Button 
+                    onClick={handleBack}
                     style={{width:"60px", display:"flex", justifyContent:"center", alignItems:"center", margin:"0.5rem 1.5rem", border:"solid 1px" }} 
                     variant="dark">
                     <span className="material-symbols-outlined">
@@ -44,7 +65,7 @@ export const Sucursal = () => {
                 <div className={styles.navSucursal}>
                     <div className={styles.tittleNav}>Administracion</div>
                     <div className={styles.buttonsNavSucursal}>
-                        <Button style={{display:"flex", alignItems:"center", justifyContent:"center", margin:"1.5rem", height:"7vh", width:"15vw", border:"solid 1px"}} variant="dark">Categorias</Button>
+                        <Button onClick={handleShowCategorias} style={{display:"flex", alignItems:"center", justifyContent:"center", margin:"1.5rem", height:"7vh", width:"15vw", border:"solid 1px"}} variant="dark">Categorias</Button>
                         <Button onClick={handleShowProductos} style={{display:"flex", alignItems:"center", justifyContent:"center", margin:"1.5rem", height:"7vh", width:"15vw", border:"solid 1px"}} variant="dark">Productos</Button>
                         <Button onClick={handleShowAlergenos} style={{display:"flex", alignItems:"center", justifyContent:"center", margin:"1.5rem", height:"7vh", width:"15vw", border:"solid 1px"}} variant="dark">Alergenos</Button>
                     </div>
@@ -53,6 +74,7 @@ export const Sucursal = () => {
                     <div className={styles.tableAlergenos}>
                         {showProductos && <ProductosSucursal onSelect={() => setShowAlergenos(true)} />}
                         {showAlergenos && <AlergenosSucursal onSelect={() => setShowAlergenos(true)} />} 
+                        {showCategorias && <CategoriasSucursal onSelect={() => setShowAlergenos(true)} />} 
                     </div>
                 </div>
             </div>

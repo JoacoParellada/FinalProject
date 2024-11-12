@@ -15,12 +15,11 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
   const [showModalEdit, setShowModalEdit] = useState(false);
 
   const handleSave = (empresaEditada: IEmpresa) => {
-    // Implement the logic to update the empresa
     console.log("Empresa editada:", empresaEditada);
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Verificar si el clic no fue en un botón
+
     if (!(e.target as Element).closest("button")) {
       onSelect();
     }

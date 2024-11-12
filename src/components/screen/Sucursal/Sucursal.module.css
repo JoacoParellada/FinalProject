@@ -14,16 +14,13 @@
     background-color: #272627;
     height: 15vh;
     display: flex;
-    flex-direction:row;
-    align-items: center;
+
 }
 
 .container {
     display: flex;
-    flex: 1; /* Ocupa el espacio restante */
+    flex: 1; 
 }
-
-
 
 .navSucursal{
     color: white;
@@ -37,9 +34,9 @@
 }
 
 .content {
-    flex: 1; /* Ocupa el espacio restante al lado del nav */
-    padding: 1rem; /* Espaciado interno */
-    overflow-y: auto; /* Permite el desplazamiento si es necesario */
+    flex: 1;
+    padding: 1rem; 
+    overflow-y: auto; 
 }
 
 .buttonsNavSucursal{

@@ -3,10 +3,31 @@
     flex-direction: column;
     color: #fff;
     padding: 1rem;
-    width: 60%;
+    width: 90%;
 }
 
 .listAlergenos{
-    border: 2px solid #000;
-    border-radius: 0.8rem;
+    border: 1px solid #D9D9D9;
+}
+
+.buttonAgregarAlergeno{
+    margin-bottom: 5vh;
+}
+
+.categoriasTabla{
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    padding: 2% 15%;
+}
+
+.categoriasTabla h4{
+    font-size: 1rem;
+    display: flex;
+}
+
+.alergenoElement{
+    height: 8vh;
+    border: 1px solid;
+    margin: 1%;
 }
