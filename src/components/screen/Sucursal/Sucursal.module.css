@@ -12,8 +12,9 @@
 .headerSucursal{
     color: white;
     background-color: #272627;
-    height: 15vh;
+    height: auto;
     display: flex;
+    padding: 1rem;
 
 }
 
@@ -26,7 +27,7 @@
     color: white;
     background-color: #1b5939;
     width: 20vw;
-    height: 100vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;

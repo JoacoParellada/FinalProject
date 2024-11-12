@@ -24,15 +24,32 @@
     color: #000;
     display: flex;
     justify-content: space-between;
-    padding: 2% 2% 0% 2%;
+    padding: 2% 2% 2% 2%;
 }
 
 .categoriasTabla h4{
     font-size: 1rem;
     display: flex;
+    margin: 0% 5%;
 }
 
+
 .productoElement{
-    height: 8vh;
+    height: auto;
     border: 1px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.productoElement > div {
+    flex: 1;                 
+    text-align: center;    
+    padding: 8px;      
+}
+
+.actionsButtons{
+    display: flex;
+    justify-content: space-between;
+}
+
