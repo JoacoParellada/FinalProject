@@ -126,7 +126,9 @@ export const Sucursal = () => {
                 />
               )}
               {showCategorias && (
-                <CategoriasSucursal onSelect={() => setShowAlergenos(true)} />
+                <CategoriasSucursal 
+                sucursal={sucursalActivo}
+                onSelect={() => setShowAlergenos(true)} />
               )}
             </div>
           </div>
