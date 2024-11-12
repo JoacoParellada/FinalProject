@@ -22,7 +22,7 @@ export class ProductService extends BackendClient<IProductos> {
         return newData as IProductos;
     }
 
-   
+
     async updateProducto(id: number, data: IUpdateProducto): Promise<IProductos> {
         const response = await fetch(`${this.baseUrl}/update/${id}`, {
             method: "PUT",
