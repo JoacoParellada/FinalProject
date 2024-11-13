@@ -19,7 +19,6 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-
     if (!(e.target as Element).closest("button")) {
       onSelect();
     }
@@ -36,6 +35,16 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
       onClick={handleCardClick}
     >
       <Card.Body className={styles.bodyCard}>
+        {/* Mostrar el logo de la empresa si está disponible */}
+        {empresa.logo && (
+          <img
+            src={empresa.logo}
+            alt={`${empresa.nombre} logo`}
+            className={styles.empresaLogo}
+            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+          />
+        )}
+
         <Card.Title className="text-black">{empresa.nombre}</Card.Title>
         <div className={styles.containerButtons} onClick={preventPropagation}>
           <Button
@@ -45,7 +54,7 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
               setShowModal(true);
             }}
             variant="warning"
-            >
+          >
             <span
               className="material-symbols-outlined"
               style={{ color: "black" }}

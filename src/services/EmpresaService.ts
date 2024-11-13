@@ -28,13 +28,7 @@ export class EmpresaService extends BackendClient<IEmpresa> {
 
 		const newData = await response.json();
 
-		/*
-    console.log(newData);
-
-		if (newData.errorMsg) {
-			throw new Error("Error al guardar la empresa");
-		}
-    */
+		
 
 		return newData as IEmpresa;
 	}
