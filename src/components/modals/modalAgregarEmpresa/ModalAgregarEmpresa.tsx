@@ -9,17 +9,16 @@ import {
 } from "../../../redux/slices/ImageReducer";
 import { removeEmpresaActiva } from "../../../redux/slices/empresasSlice";
 import { ICreateEmpresaDto } from "../../../types/dtos/empresa/ICreateEmpresaDto";
+import { UploadImageCompany } from "../../ui/UploadImage/UploadImageEmpresa"; // Importa tu componente
 
 interface ModalAgregarEmpresaProps {
 	show: boolean;
 	handleClose: () => void;
-	//onSave: (empresa: IEmpresa) => void; // Updated for conditional save
 }
 
 export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 	show,
 	handleClose,
-	//onSave,
 }) => {
 	const empresaService = new EmpresaService();
 	const dispatch = useAppDispatch();
@@ -48,26 +47,15 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 		}
 	}, [empresaActiva, dispatch]);
 
-	// Manejo del cambio de campos de formulario
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setNuevaEmpresa((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	};
-
-	// Manejo del cambio de imagen
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				const result = reader.result as string;
-				setNuevaEmpresa((prev) => ({ ...prev, logo: result }));
-				dispatch(setImageStringActivo(result));
-			};
-			reader.readAsDataURL(file);
+	// Actualizar el estado de logo con la URL de la imagen cargada
+	const handleImageSet = (image: string | null) => {
+		if (image) {
+			setNuevaEmpresa((prev) => ({ ...prev, logo: image }));
+			dispatch(setImageStringActivo(image));
+		} else {
+			console.error("Error: la imagen no es válida.");
+			setNuevaEmpresa((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
+			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
 		}
 	};
 
@@ -88,7 +76,6 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 					logo: imageActivo,
 				});
 			}
-			// onSave(nuevaEmpresa);  // Llamar la función de onSave para actualizar la lista
 			handleClose(); // Cerrar el modal
 			setNuevaEmpresa({
 				nombre: "",
@@ -118,7 +105,12 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 							type="text"
 							name="nombre"
 							value={nuevaEmpresa.nombre}
-							onChange={handleChange}
+							onChange={(e) =>
+								setNuevaEmpresa((prev) => ({
+									...prev,
+									nombre: e.target.value,
+								}))
+							}
 							required
 						/>
 					</Form.Group>
@@ -128,7 +120,12 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 							type="text"
 							name="razonSocial"
 							value={nuevaEmpresa.razonSocial}
-							onChange={handleChange}
+							onChange={(e) =>
+								setNuevaEmpresa((prev) => ({
+									...prev,
+									razonSocial: e.target.value,
+								}))
+							}
 							required
 						/>
 					</Form.Group>
@@ -138,16 +135,21 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 							type="text"
 							name="cuit"
 							value={nuevaEmpresa.cuit}
-							onChange={handleChange}
+							onChange={(e) =>
+								setNuevaEmpresa((prev) => ({
+									...prev,
+									cuit: e.target.value,
+								}))
+							}
 							required
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3">
 						<Form.Label>Logo</Form.Label>
-						<Form.Control
-							type="file"
-							onChange={handleImageChange}
-							accept="image/*"
+						{/* Integración del componente de subida de imagen */}
+						<UploadImageCompany
+							image={nuevaEmpresa.logo}
+							setImage={handleImageSet}
 						/>
 					</Form.Group>
 				</Modal.Body>
