@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 import { EmpresaService } from "../../../services/EmpresaService";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import {

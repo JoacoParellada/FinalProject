@@ -2,11 +2,11 @@ import { ICreateSucursal } from "../types/dtos/sucursal/ICreateSucursal";
 import { ISucursal } from "../types/dtos/sucursal/ISucursal";
 import { IUpdateSucursal } from "../types/dtos/sucursal/IUpdateSucursal";
 import { BackendClient } from "./BackendClient";
-import { BASEURL } from "./BaseUrl";
+const API_URL:string = import.meta.env.VITE_URL_API
 
 export class SucursalService extends BackendClient<ISucursal> {
   constructor() {
-    super(BASEURL + "/sucursales");
+    super(API_URL + "/sucursales");
   }
   async getAllSucursales(): Promise<ISucursal[]> {
     const response = await fetch(`${this.baseUrl}`);

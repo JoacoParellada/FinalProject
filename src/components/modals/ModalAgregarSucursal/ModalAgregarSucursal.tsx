@@ -8,7 +8,11 @@ import { ILocalidad } from "../../../types/ILocalidad";
 import { LocalidadesService } from "../../../services/LocalidadesService";
 import { ProvinciaService } from "../../../services/ProvinciaService";
 import { PaisService } from "../../../services/PaisService";
+import { SucursalService } from "../../../services/SucursalService";
 import styles from "./ModalAgregarSucursal.module.css";
+import { removeImageActivo, setImageStringActivo } from "../../../redux/slices/ImageReducer";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
+import { UploadImageCompany } from "../../ui/UploadImage/UploadImageEmpresa";
 
 interface ModalAgregarSucursalProps {
   show: boolean;
@@ -23,6 +27,8 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
   onSave,
   idEmpresa,
 }) => {
+
+  const dispatch = useAppDispatch()
   const [nuevaSucursal, setNuevaSucursal] = useState<ICreateSucursal>({
     nombre: "",
     horarioApertura: "",
@@ -38,17 +44,17 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
       nroDpto: 0,
       idLocalidad: 0,
     },
-    idEmpresa: idEmpresa, // Este valor deberías establecerlo según la empresa seleccionada
+    idEmpresa: idEmpresa,
     logo: null,
   });
+
+  const empresaActiva = useAppSelector((state)=> state.empresas.empresaActiva)
 
   const [paises, setPaises] = useState<IPais[]>([]);
   const [provincias, setProvincias] = useState<IProvincia[]>([]);
   const [localidades, setLocalidades] = useState<ILocalidad[]>([]);
   const [selectedPais, setSelectedPais] = useState<number | null>(null);
-  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
-    null
-  );
+  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchPaises = async () => {
@@ -63,10 +69,9 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
     const fetchProvincias = async () => {
       if (selectedPais) {
         const provinciaService = new ProvinciaService();
-        const provinciasData = await provinciaService.getProvinciaByPais(
-          selectedPais
-        );
+        const provinciasData = await provinciaService.getProvinciaByPais(selectedPais);
         setProvincias(provinciasData);
+        setLocalidades([]);
       }
     };
     fetchProvincias();
@@ -76,8 +81,7 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
     const fetchLocalidades = async () => {
       if (selectedProvincia) {
         const localidadesService = new LocalidadesService();
-        const localidadesData =
-          await localidadesService.getLocalidadesByProvincia(selectedProvincia);
+        const localidadesData = await localidadesService.getLocalidadesByProvincia(selectedProvincia);
         setLocalidades(localidadesData);
       }
     };
@@ -85,60 +89,98 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
   }, [selectedProvincia]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setNuevaSucursal((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleChangeDomicilio = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setNuevaSucursal((prev) => ({
       ...prev,
-      [name]: value,
+      domicilio: {
+        ...prev.domicilio,
+        [name]: value,
+      },
     }));
   };
 
-  const handleSelectPais = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const paisId = Number(e.target.value);
+  const handleSelectPais = (e: React.ChangeEvent<HTMLElement>) => {
+    const target = e.target as HTMLSelectElement;
+    const paisId = Number(target.value);
     setSelectedPais(paisId);
     setNuevaSucursal((prev) => ({
       ...prev,
-      domicilio: { ...prev.domicilio, idLocalidad: 0 }, // Resetear localidad al cambiar país
+      domicilio: { ...prev.domicilio, idLocalidad: 0 },
+    }));
+    setSelectedProvincia(null);
+  };
+
+  const handleSelectProvincia = (e: React.ChangeEvent<HTMLElement>) => {
+    const target = e.target as HTMLSelectElement;
+    const provinciaId = Number(target.value);
+    setSelectedProvincia(provinciaId);
+    setNuevaSucursal((prev) => ({
+      ...prev,
+      domicilio: { ...prev.domicilio, idLocalidad: 0 },
     }));
   };
 
-  const handleSelectProvincia = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const provinciaId = Number(e.target.value);
-    setSelectedProvincia(provinciaId);
-  };
+ 	const handleImageSet = (image: string | null) => {
+		if (image) {
+			setNuevaSucursal((prev) => ({ ...prev, logo: image }));
+			dispatch(setImageStringActivo(image));
+		} else {
+			console.error("Error: la imagen no es válida.");
+			setNuevaSucursal((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
+			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
+		}
+	};
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSave(nuevaSucursal);
-    handleClose();
-    // Reset form
-    setNuevaSucursal({
-      nombre: "",
-      horarioApertura: "",
-      horarioCierre: "",
-      esCasaMatriz: false,
-      latitud: 0,
-      longitud: 0,
-      domicilio: {
-        calle: "",
-        numero: 0,
-        cp: 0,
-        piso: 0,
-        nroDpto: 0,
-        idLocalidad: 0,
-      },
-      idEmpresa: 0,
-      logo: null,
-    });
-    setSelectedPais(null);
-    setSelectedProvincia(null);
+    try {
+      const sucursalService = new SucursalService();
+      const respuesta = await sucursalService.createSucursal(nuevaSucursal);
+      if (respuesta) {
+        onSave(nuevaSucursal);
+        handleClose();
+        setNuevaSucursal({
+          nombre: "",
+          horarioApertura: "",
+          horarioCierre: "",
+          esCasaMatriz: false,
+          latitud: 0,
+          longitud: 0,
+          domicilio: {
+            calle: "",
+            numero: 0,
+            cp: 0,
+            piso: 0,
+            nroDpto: 0,
+            idLocalidad: 0,
+          },
+          idEmpresa: idEmpresa,
+          logo: null,
+        });
+        setSelectedPais(null);
+        setSelectedProvincia(null);
+      } else {
+        console.error("Error al agregar la sucursal");
+      }
+    } catch (error) {
+      console.error("Error en la creación de la sucursal", error);
+    }
   };
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header className={styles.modalHeader} closeButton>
-        <Modal.Title className={styles.modalTitle}>
-          Agregar Sucursal
-        </Modal.Title>
+        <Modal.Title className={styles.modalTitle}>Agregar Sucursal</Modal.Title>
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
         <Form onSubmit={handleSubmit}>
@@ -154,13 +196,8 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             />
           </Form.Group>
 
-          <Form.Group
-            controlId="formHorarioApertura"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Horario de Apertura
-            </Form.Label>
+          <Form.Group controlId="formHorarioApertura" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Horario de Apertura</Form.Label>
             <Form.Control
               className={styles.formControl}
               type="time"
@@ -171,13 +208,8 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             />
           </Form.Group>
 
-          <Form.Group
-            controlId="formHorarioCierre"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Horario de Cierre
-            </Form.Label>
+          <Form.Group controlId="formHorarioCierre" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Horario de Cierre</Form.Label>
             <Form.Control
               className={styles.formControl}
               type="time"
@@ -188,18 +220,13 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             />
           </Form.Group>
 
-          <Form.Group controlId="formCasaMatriz" className={styles.formGroup}>
+          <Form.Group controlId="formEsCasaMatriz" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Es Casa Matriz</Form.Label>
             <Form.Check
               type="checkbox"
-              label="Es Casa Matriz"
               name="esCasaMatriz"
               checked={nuevaSucursal.esCasaMatriz}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  esCasaMatriz: e.target.checked,
-                })
-              }
+              onChange={handleChange}
             />
           </Form.Group>
 
@@ -207,7 +234,7 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             <Form.Label className={styles.formLabel}>Latitud</Form.Label>
             <Form.Control
               className={styles.formControl}
-              type="text"
+              type="number"
               name="latitud"
               value={nuevaSucursal.latitud}
               onChange={handleChange}
@@ -219,7 +246,7 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             <Form.Label className={styles.formLabel}>Longitud</Form.Label>
             <Form.Control
               className={styles.formControl}
-              type="text"
+              type="number"
               name="longitud"
               value={nuevaSucursal.longitud}
               onChange={handleChange}
@@ -227,20 +254,74 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             />
           </Form.Group>
 
-          <Form.Group
-            controlId="formSeleccionarPais"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Seleccionar País
-            </Form.Label>
+          <Form.Group controlId="formCalle" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Calle</Form.Label>
             <Form.Control
-              as="select"
               className={styles.formControl}
+              type="text"
+              name="calle"
+              value={nuevaSucursal.domicilio.calle}
+              onChange={handleChangeDomicilio}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formNumero" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Número</Form.Label>
+            <Form.Control
+              className={styles.formControl}
+              type="number"
+              name="numero"
+              value={nuevaSucursal.domicilio.numero}
+              onChange={handleChangeDomicilio}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formCP" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Código Postal</Form.Label>
+            <Form.Control
+              className={styles.formControl}
+              type="number"
+              name="cp"
+              value={nuevaSucursal.domicilio.cp}
+              onChange={handleChangeDomicilio}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formPiso" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Piso</Form.Label>
+            <Form.Control
+              className={styles.formControl}
+              type="number"
+              name="piso"
+              value={nuevaSucursal.domicilio.piso}
+              onChange={handleChangeDomicilio}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formNroDpto" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Número Departamento</Form.Label>
+            <Form.Control
+              className={styles.formControl}
+              type="number"
+              name="nroDpto"
+              value={nuevaSucursal.domicilio.nroDpto}
+              onChange={handleChangeDomicilio}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formPais" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>País</Form.Label>
+            <Form.Control
+              className={styles.formControl}
+              as="select"
+              value={selectedPais || ""}
               onChange={handleSelectPais}
               required
             >
-              <option value="">Seleccione un país</option>
+              <option value="">Seleccionar País</option>
               {paises.map((pais) => (
                 <option key={pais.id} value={pais.id}>
                   {pais.nombre}
@@ -249,20 +330,16 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             </Form.Control>
           </Form.Group>
 
-          <Form.Group
-            controlId="formSeleccionarProvincia"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Seleccionar Provincia
-            </Form.Label>
+          <Form.Group controlId="formProvincia" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Provincia</Form.Label>
             <Form.Control
-              as="select"
               className={styles.formControl}
+              as="select"
+              value={selectedProvincia || ""}
               onChange={handleSelectProvincia}
               required
             >
-              <option value="">Seleccione una provincia</option>
+              <option value="">Seleccionar Provincia</option>
               {provincias.map((provincia) => (
                 <option key={provincia.id} value={provincia.id}>
                   {provincia.nombre}
@@ -271,28 +348,17 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             </Form.Control>
           </Form.Group>
 
-          <Form.Group
-            controlId="formSeleccionarLocalidad"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Seleccionar Localidad
-            </Form.Label>
+          <Form.Group controlId="formLocalidad" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Localidad</Form.Label>
             <Form.Control
               className={styles.formControl}
               as="select"
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: {
-                    ...nuevaSucursal.domicilio,
-                    idLocalidad: Number(e.target.value),
-                  },
-                })
-              }
+              name="idLocalidad"
+              value={nuevaSucursal.domicilio.idLocalidad || ""}
+              onChange={handleChangeDomicilio}
               required
             >
-              <option value="">Seleccione una localidad</option>
+              <option value="">Seleccionar Localidad</option>
               {localidades.map((localidad) => (
                 <option key={localidad.id} value={localidad.id}>
                   {localidad.nombre}
@@ -301,133 +367,15 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
             </Form.Control>
           </Form.Group>
 
-          <Form.Group controlId="formCalle" className={styles.formGroup}>
-            <Form.Label className={styles.formLabel}>
-              Nombre de la Calle
-            </Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="text"
-              name="calle"
-              value={nuevaSucursal.domicilio.calle}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: {
-                    ...nuevaSucursal.domicilio,
-                    calle: e.target.value,
-                  },
-                })
-              }
-              required
+          <Form.Group controlId="formLogo" className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Logo</Form.Label>
+            <UploadImageCompany 
+              image={nuevaSucursal.logo}
+              setImage={handleImageSet}
             />
           </Form.Group>
 
-          <Form.Group controlId="formNumeroCalle" className={styles.formGroup}>
-            <Form.Label className={styles.formLabel}>
-              Número de la Calle
-            </Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="text"
-              name="numero"
-              value={nuevaSucursal.domicilio.numero}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: {
-                    ...nuevaSucursal.domicilio,
-                    numero: Number(e.target.value),
-                  },
-                })
-              }
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formCodigoPostal" className={styles.formGroup}>
-            <Form.Label className={styles.formLabel}>Código Postal</Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="text"
-              name="cp"
-              value={nuevaSucursal.domicilio.cp}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: { ...nuevaSucursal.domicilio, cp: e.target.value },
-                })
-              }
-              required
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formNumeroPiso" className={styles.formGroup}>
-            <Form.Label className={styles.formLabel}>
-              Ingresar Número de Piso
-            </Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="number"
-              name="piso"
-              value={nuevaSucursal.domicilio.piso}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: {
-                    ...nuevaSucursal.domicilio,
-                    piso: Number(e.target.value),
-                  },
-                })
-              }
-            />
-          </Form.Group>
-
-          <Form.Group
-            controlId="formNumeroDepartamento"
-            className={styles.formGroup}
-          >
-            <Form.Label className={styles.formLabel}>
-              Ingresar Número de Departamento
-            </Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="number"
-              name="nroDpto"
-              value={nuevaSucursal.domicilio.nroDpto}
-              onChange={(e) =>
-                setNuevaSucursal({
-                  ...nuevaSucursal,
-                  domicilio: {
-                    ...nuevaSucursal.domicilio,
-                    nroDpto: Number(e.target.value),
-                  },
-                })
-              }
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formElegirImagen" className={styles.formGroup}>
-            <Form.Label className={styles.formLabel}>Elegir Imagen</Form.Label>
-            <Form.Control
-              className={styles.formControl}
-              type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setNuevaSucursal({
-                    ...nuevaSucursal,
-                    logo: e.target.files[0],
-                  });
-                }
-              }}
-            />
-          </Form.Group>
-
-          <Button
-            className={styles.buttonPrimary}
-            variant="primary"
-            type="submit"
-          >
+          <Button variant="primary" type="submit" className={styles.submitButton}>
             Guardar
           </Button>
         </Form>

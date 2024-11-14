@@ -1,10 +1,11 @@
+
 import { ILocalidad } from "../types/ILocalidad";
 import { BackendClient } from "./BackendClient";
-import { BASEURL } from "./BaseUrl";
+const API_URL:string = import.meta.env.VITE_URL_API
 
 export class LocalidadesService extends BackendClient<ILocalidad> {
 	constructor() {
-		super(BASEURL + "/localidades");
+		super(API_URL + "/localidades");
 	}
 
 	async getLocalidadesByProvincia(provinciaId: number): Promise<ILocalidad[]> {
