@@ -1,10 +1,10 @@
 import { IPais } from "../types/IPais";
 import { BackendClient } from "./BackendClient";
-import { BASEURL } from "./BaseUrl";
+const API_URL:string = import.meta.env.VITE_URL_API
 
 export class PaisService extends BackendClient<IPais> {
     constructor() {
-        super(BASEURL + "/paises");
+        super(API_URL + "/paises");
     }
 
     

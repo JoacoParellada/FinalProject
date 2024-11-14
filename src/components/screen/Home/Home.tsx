@@ -1,4 +1,4 @@
-import { Button } from "react-bootstrap";
+import { Button, Spinner, Alert } from "react-bootstrap";
 import styles from "./Home.module.css";
 import { ModalAgregarEmpresa } from "../../modals/modalAgregarEmpresa/ModalAgregarEmpresa";
 import { useState, useEffect } from "react";
@@ -19,60 +19,78 @@ export const Home = () => {
   const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<IEmpresa | null>(null);
   const [sucursales, setSucursales] = useState<ISucursal[]>([]);
-  const [selectedSucursal, setSelectedSucursal] = useState<ISucursal | null>(null);
+  const [selectedSucursal, setSelectedSucursal] = useState<ISucursal | null>(
+    null
+  );
+  const [loadingEmpresas, setLoadingEmpresas] = useState(false);
+  const [loadingSucursales, setLoadingSucursales] = useState(false);
+  const [errorEmpresas, setErrorEmpresas] = useState<string | null>(null);
+  const [errorSucursales, setErrorSucursales] = useState<string | null>(null);
 
   const empresaService = new EmpresaService();
   const sucursalService = new SucursalService();
 
   const fetchEmpresas = async () => {
+    setLoadingEmpresas(true);
+    setErrorEmpresas(null);
     try {
       const data = await empresaService.getAllEmpresas();
       console.log("Empresas: ", data);
       setEmpresas(data);
     } catch (error) {
       console.log("Error fetching empresas:", error);
+      setErrorEmpresas("Error al cargar las empresas. Intenta nuevamente.");
+    } finally {
+      setLoadingEmpresas(false);
     }
   };
 
   const fetchSucursalesByEmpresa = async (idEmpresa: number) => {
+    setLoadingSucursales(true);
+    setErrorSucursales(null);
     try {
       const data = await sucursalService.getAllSucursalesByEmpresa(idEmpresa);
       console.log("Sucursales: ", data);
       setSucursales(data);
     } catch (error) {
       console.log("Error fetching sucursales:", error);
+      setErrorSucursales("Error al cargar las sucursales. Intenta nuevamente.");
+    } finally {
+      setLoadingSucursales(false);
     }
   };
 
-  useEffect(() => {
-    if (!showModalEmpresa) fetchEmpresas();
-  }, [showModalEmpresa]);
-
-  const handleShowEmpresa = () => setShowModalEmpresa(true);
-  const handleCloseEmpresa = () => setShowModalEmpresa(false);
-
-  const handleShowSucursal = () => setShowModalSucursal(true);
-  const handleCloseSucursal = () => setShowModalSucursal(false);
-
   const handleSaveSucursal = async (nuevaSucursal: ICreateSucursal) => {
     try {
+      // Crear la nueva sucursal en el backend
       await sucursalService.createSucursal(nuevaSucursal);
       console.log("Sucursal guardada: ", nuevaSucursal);
-      fetchSucursalesByEmpresa(nuevaSucursal.idEmpresa);
+
+      // Recargar las sucursales para la empresa seleccionada
+      if (selectedEmpresa) {
+        fetchSucursalesByEmpresa(selectedEmpresa.id);
+      }
     } catch (error) {
       console.log("Error saving new sucursal: ", error);
     }
-    handleCloseSucursal();
+    handleCloseSucursal(); // Cerrar el modal después de guardar la sucursal
   };
 
   const handleSelectEmpresa = (empresa: IEmpresa) => {
     setSelectedEmpresa(empresa);
-    fetchSucursalesByEmpresa(empresa.id);
+    fetchSucursalesByEmpresa(empresa.id); // Cargar las sucursales de la empresa seleccionada
   };
 
   const handleSelectSucursal = (sucursal: ISucursal) => {
     setSelectedSucursal(sucursal);
   };
+
+  const handleShowSucursal = () => setShowModalSucursal(true);
+  const handleCloseSucursal = () => setShowModalSucursal(false);
+
+  useEffect(() => {
+    if (!showModalEmpresa) fetchEmpresas();
+  }, [showModalEmpresa]);
 
   return (
     <div className={styles.mainContainer}>
@@ -83,22 +101,29 @@ export const Home = () => {
             <h1>Empresas</h1>
             <Button
               variant="dark"
-              onClick={handleShowEmpresa}
-              className={styles.addEmpresaButton}
-            >
+              onClick={() => setShowModalEmpresa(true)}
+              className={styles.addEmpresaButton}>
               <span className="material-symbols-outlined">add</span>
               Agregar Empresa
             </Button>
           </div>
 
           <div className={styles.empresasList}>
-            {empresas.map((empresa, index) => (
-              <CardEmpresa
-                key={index}
-                empresa={empresa}
-                onSelect={() => handleSelectEmpresa(empresa)}
-              />
-            ))}
+            {loadingEmpresas ? (
+              <Spinner animation="border" variant="primary" />
+            ) : errorEmpresas ? (
+              <Alert variant="danger">{errorEmpresas}</Alert>
+            ) : empresas.length === 0 ? (
+              <p>No hay empresas disponibles.</p>
+            ) : (
+              empresas.map((empresa, index) => (
+                <CardEmpresa
+                  key={index}
+                  empresa={empresa}
+                  onSelect={() => handleSelectEmpresa(empresa)}
+                />
+              ))
+            )}
           </div>
         </div>
 
@@ -111,13 +136,21 @@ export const Home = () => {
             />
 
             <div className={styles.sucursalesList}>
-              {sucursales.map((sucursal) => (
-                <CardSucursal
-                  key={sucursal.id}
-                  sucursal={sucursal}
-                  onSelect={() => handleSelectSucursal(sucursal)}
-                />
-              ))}
+              {loadingSucursales ? (
+                <Spinner animation="border" variant="primary" />
+              ) : errorSucursales ? (
+                <Alert variant="danger">{errorSucursales}</Alert>
+              ) : sucursales.length === 0 ? (
+                <p>No hay sucursales para esta empresa.</p>
+              ) : (
+                sucursales.map((sucursal) => (
+                  <CardSucursal
+                    key={sucursal.id}
+                    sucursal={sucursal}
+                    onSelect={() => handleSelectSucursal(sucursal)}
+                  />
+                ))
+              )}
             </div>
           </div>
         )}
@@ -126,7 +159,7 @@ export const Home = () => {
       {/* Modales */}
       <ModalAgregarEmpresa
         show={showModalEmpresa}
-        handleClose={handleCloseEmpresa}
+        handleClose={() => setShowModalEmpresa(false)}
       />
       <ModalAgregarSucursal
         show={showModalSucursal}

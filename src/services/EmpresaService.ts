@@ -2,10 +2,11 @@ import { ICreateEmpresaDto } from "../types/dtos/empresa/ICreateEmpresaDto";
 import { IEmpresa } from "../types/dtos/empresa/IEmpresa";
 import { IUpdateEmpresaDto } from "../types/dtos/empresa/IUpdateEmpresaDto";
 import { BackendClient } from "./BackendClient";
+const API_URL: string = import.meta.env.VITE_URL_API;
 
 export class EmpresaService extends BackendClient<IEmpresa> {
 	constructor() {
-		super(`http://localhost:8090/empresas`);
+		super(API_URL + "/empresas");
 	}
 
 	async getAllEmpresas(): Promise<IEmpresa[]> {
@@ -27,8 +28,6 @@ export class EmpresaService extends BackendClient<IEmpresa> {
 		});
 
 		const newData = await response.json();
-
-		
 
 		return newData as IEmpresa;
 	}
