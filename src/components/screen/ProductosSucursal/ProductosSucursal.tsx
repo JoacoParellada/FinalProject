@@ -224,7 +224,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                         <div>{producto.denominacion}</div>
                         <div>${producto.precioVenta}</div>
                         <div><Button onClick={() => handleDescripcionProducto(producto)}>Descripcion</Button></div>
-                        {/* <div>{producto.categoria.denominacion}</div> */}
+                        <div>{producto.categoria.denominacion}</div> 
                         <div>{producto.habilitado ? "Si" : "No"}</div>
                         <div className={styles.actionsButtons}>
                         <Button
