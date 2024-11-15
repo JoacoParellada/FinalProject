@@ -1,0 +1,50 @@
+/* src/components/modals/ModalAgregarSucursal/ModalAgregarSucursal.module.css */
+
+.modalHeader {
+  background-color: #ffffff; /* Color de fondo del encabezado */
+  color: rgb(0, 0, 0); /* Color del texto */
+  font-weight: bold; /* Negrita */
+}
+
+.modalTitle {
+  font-size: 1.5rem; /* Tamaño del título */
+}
+
+.modalBody {
+  padding: 20px; /* Espaciado interno */
+}
+
+.formGroup {
+  margin-bottom: 1.5rem; /* Espaciado entre grupos de formulario */
+}
+
+.formLabel {
+  font-weight: bold; /* Negrita para las etiquetas */
+  color: #333; /* Color del texto */
+}
+
+.formControl {
+  border: 1px solid #ced4da; /* Borde del control */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  transition: border-color 0.2s; /* Transición suave para el borde */
+}
+
+.formControl:focus {
+  border-color: #007bff; /* Color del borde al enfocar */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra al enfocar */
+}
+
+.buttonPrimary {
+  background-color: #007bff; /* Color de fondo del botón */
+  border: none; /* Sin borde */
+  color: white; /* Color del texto */
+  padding: 10px 20px; /* Espaciado interno */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  font-size: 1rem; /* Tamaño de fuente */
+  transition: background-color 0.2s; /* Transición suave para el fondo */
+}
+
+.buttonPrimary:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+}
