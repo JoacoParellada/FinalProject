@@ -4,7 +4,6 @@ import styles from "./CategoriaSucursal.module.css";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { CategoriaService } from "../../../services/CategoriaService";
 import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
-
 import { ICreateCategoria } from "../../../types/dtos/categorias/ICreateCategoria";
 import { ModalAgregarCategoria } from "../../modals/ModalAgregarCategoria/ModalAgregarCategoria";
 
