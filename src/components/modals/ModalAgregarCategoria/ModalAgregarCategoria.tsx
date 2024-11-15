@@ -1,64 +1,49 @@
 import { FC } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
-import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
+import { Modal, Button, Form } from "react-bootstrap";
+import { ICreateCategoria } from "../../../types/dtos/categorias/ICreateCategoria";
 
 interface ModalAgregarCategoriaProps {
   show: boolean;
-  handleClose: () => void;
-  categoria: ICategorias | null;
-  newCategoriaDenominacion: string;
-  setNewCategoriaDenominacion: (denominacion: string) => void;
-  onAddCategoria: () => Promise<void>;
+  onHide: () => void;
+  onSave: (denominacion: string) => void; // Cambiamos la función para recibir solo la denominación
+  denominacion: string; // La denominación de la nueva categoría
+  setDenominacion: (denominacion: string) => void; // Función para actualizar la denominación
 }
 
 export const ModalAgregarCategoria: FC<ModalAgregarCategoriaProps> = ({
   show,
-  handleClose,
-  categoria,
-  newCategoriaDenominacion,
-  setNewCategoriaDenominacion,
-  onAddCategoria,
+  onHide,
+  onSave,
+  denominacion,
+  setDenominacion,
 }) => {
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onAddCategoria();
-    handleClose();
-  };
-
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
         <Modal.Title>Agregar Categoría</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formNombre">
-            <Form.Label>Nombre de la Categoría</Form.Label>
+        <Form>
+          <Form.Group controlId="formDenominacion">
+            <Form.Label>Denominación</Form.Label>
             <Form.Control
               type="text"
-              value={newCategoriaDenominacion}
-              onChange={(e) => setNewCategoriaDenominacion(e.target.value)}
+              placeholder="Ingrese la denominación"
+              value={denominacion}
+              onChange={(e) => setDenominacion(e.target.value)}
               required
             />
           </Form.Group>
-          <div className="containerButtons" style={{ gap: "1rem" }}>
-            <Button
-              style={{ margin: "1rem" }}
-              variant="danger"
-              onClick={handleClose}
-            >
-              Cancelar
-            </Button>
-            <Button
-              style={{ marginRight: "1rem" }}
-              variant="success"
-              type="submit"
-            >
-              Guardar
-            </Button>
-          </div>
         </Form>
       </Modal.Body>
+      <Modal.Footer>
+        <Button variant="danger" onClick={onHide}>
+          Cancelar
+        </Button>
+        <Button variant="success" onClick={() => onSave(denominacion)}>
+          Agregar
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

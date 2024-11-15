@@ -41,4 +41,20 @@ export class CategoriaService extends BackendClient<ICategorias> {
     const data = await response.json();
     return data as ICategorias;
   }
+  async put(id: number, data: ICategorias): Promise<ICategorias> {
+    const response = await fetch(`${this.baseUrl}/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating categoria");
+    }
+
+    const updatedData = await response.json();
+    return updatedData as ICategorias; // Asegúrate de que esto devuelva la categoría actualizada
+  }
 }
