@@ -9,9 +9,12 @@ import { IProductos } from "../../../types/dtos/productos/IProductos";
 import { ProductService } from "../../../services/ProductService";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
 import { AlergenoService } from "../../../services/AlergenoService";
+import { useDispatch } from "react-redux";
+import { removeImageActivo, setImageStringActivo } from "../../../redux/slices/ImageReducer";
+import { UploadImageCompany } from "../../ui/UploadImage/UploadImageEmpresa";
 
 interface TablaProductosProps {
-    sucursal : ISucursal | null
+    sucursal : ISucursal 
     onSelect: () => void;
 }
 
@@ -25,6 +28,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const [showModalDeleteProducto, setShowModalDeleteProducto] = useState(false);
     const [productoAEliminar, setProductoAEliminar] = useState<number | null>(null);
     const [showModalProducto, setShowModalProducto] = useState(false);
+    const [showListProductos, setShowListProductos] = useState(true);
     
     const [alergeno, setAlergeno] = useState<IAlergenos[]>([]);
     const [categorias, setCategorias] = useState<ICategorias[]>([]);
@@ -42,8 +46,10 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const [newProductoCodigo, setNewProductoCodigo] = useState("");
     const [newProductoCategoria, setNewProductoCategoria] = useState(0);
     const [newProductoAlergeno, setNewProductoAlergeno] = useState<number[]>([]);
+    const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<number>(0);
+    const [newProductoImagen, setNewProductoImagen] = useState<{ logo: string }>({ logo: "" });
     
-
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (sucursal) {
@@ -51,8 +57,10 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
             fetchProductosBySucursal(sucursal.id)
             fetchAllAlergenos()
             handleAddProducto()
+            
         }
     }, [sucursal]);
+
     
     //---------- GET CATEGORIAS POR SUSCURSAL ----------
     const fetchCategoriasBySucursal = async (idSucursal: number) => {
@@ -67,6 +75,14 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
 
     const handleCategoriaSelect = (categoria: ICategorias) => {
         console.log("Categoría seleccionada:", categoria.denominacion);
+        setCategoriaSeleccionadaId(categoria.id);
+        if(categoria.denominacion === "MENU"){
+            setShowListProductos(true)
+        }else{
+            setShowListProductos(false)
+        }
+        
+        
     };
 
     //--------- GET ALERGENOS -----------------
@@ -169,6 +185,20 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
         }
         setShowModalProducto(false)
     }
+
+
+    // --------------- HANDLE AGREGAR IMAGEN -------------
+
+    const handleImageSet = (image: string | null) => {
+		if (image) {
+			setNewProductoImagen((prev) => ({ ...prev, logo: image }));
+			dispatch(setImageStringActivo(image));
+		} else {
+			console.error("Error: la imagen no es válida.");
+			setNewProductoImagen((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
+			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
+		}
+	};
     
     return (
         <div className={styles.homeProductos}>
@@ -216,7 +246,8 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                     <h4>Acciones</h4>
                 </div>
                 <ListGroup className={styles.listProductos}>
-                    {productos.map((producto, index)=>(
+                    {showListProductos
+                        ? productos.map((producto, index)=>(
                         <ListGroup.Item 
                         className={styles.productoElement}
                         key={index}
@@ -227,6 +258,8 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                         <div>{producto.categoria.denominacion}</div> 
                         <div>{producto.habilitado ? "Si" : "No"}</div>
                         <div className={styles.actionsButtons}>
+                            
+                        
                         <Button
                             className="d-flex align-items-center"
                             onClick={()=>handleVerProducto(producto)}
@@ -267,8 +300,60 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                         </div>
                         
                         </ListGroup.Item>
-                    ))}
-                    
+                    ))
+                    : productos
+                        .filter(producto => producto.categoria.id === categoriaSeleccionadaId) // Filtrar por la categoría seleccionada
+                        .map((producto, index) => (
+                            <ListGroup.Item
+                            className={styles.productoElement}
+                            key={index}
+                            >
+                            <div>{producto.denominacion}</div>
+                            <div>${producto.precioVenta}</div>
+                            <div><Button onClick={() => handleDescripcionProducto(producto)}>Descripcion</Button></div>
+                            <div>{producto.categoria.denominacion}</div>
+                            <div>{producto.habilitado ? "Si" : "No"}</div>
+                            <div className={styles.actionsButtons}>
+                                <Button
+                                    className="d-flex align-items-center"
+                                    onClick={()=>handleVerProducto(producto)}
+                                    variant="warning"
+                                    >
+                                    <span
+                                    className="material-symbols-outlined"
+                                    style={{ color: "black" }}
+                                    >
+                                    visibility
+                                    </span>
+                                </Button>
+                                <Button
+                                    className="d-flex align-items-center"
+                                    variant="primary"
+                                >
+                                    <span
+                                    className="material-symbols-outlined"
+                                    style={{ color: "black" }}
+                                    >
+                                    edit
+                                    </span>
+                                </Button>
+                                <Button
+                                    className="d-flex align-items-center"
+                                    variant="danger"
+                                >
+                                    <span
+                                    className="material-symbols-outlined"
+                                    style={{ color: "black" }}
+                                    onClick={()=>{
+                                        handleDeleteProducto(producto.id)
+                                    }}
+                                    >
+                                    delete
+                                    </span>
+                                </Button>
+                            </div>
+                            </ListGroup.Item>
+                        ))}
                 </ListGroup>
             </div>
             <Modal show={showModalDescripcion} onHide={handleCloseModal}>
@@ -295,9 +380,17 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                     <br />
                     <strong>Categoria:</strong> {selectedProducto?.categoria.denominacion}
                     <br />
-                    <strong>Habilitado</strong> {selectedProducto?.habilitado ? "Si": "No"}
+                    <strong>Habilitado:</strong> {selectedProducto?.habilitado ? "Si": "No"}
                     <br />
-                    //FALTA IMAGEN
+                    <strong>Imagen:</strong> 
+                        {selectedProducto?.imagenes?.length ? (
+                        selectedProducto.imagenes.map((imagen, index) => (
+                            <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ maxWidth: "100px", maxHeight: "100px", margin: "5px" }} />
+                        ))
+                        ) : (
+                        <span>No hay imágenes disponibles</span>
+                        )}
+                    
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseModalVerProducto}>
@@ -413,6 +506,13 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                                 ))}
                             </div>
                         </Form.Group> */}
+                        <Form.Group controlId="formLogo" className={styles.formGroup}>
+                            <Form.Label className={styles.formLabel}>Logo</Form.Label>
+                            <UploadImageCompany 
+                            image={newProductoImagen.logo}
+                            setImage={handleImageSet}
+                            />
+                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
