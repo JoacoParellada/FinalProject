@@ -12,6 +12,11 @@ import { AlergenoService } from "../../../services/AlergenoService";
 import { useDispatch } from "react-redux";
 import { removeImageActivo, setImageStringActivo } from "../../../redux/slices/ImageReducer";
 import { UploadImageCompany } from "../../ui/UploadImage/UploadImageEmpresa";
+import { AlergenosSucursal } from "../AlergenosSucursal/AlergenosSucursal";
+import { IImagen } from "../../../types/IImagen";
+import { ImageService } from "../../../services/ImageService";
+import { ICreateProducto } from "../../../types/dtos/productos/ICreateProducto";
+import { useAppSelector } from "../../../hooks/redux";
 
 interface TablaProductosProps {
     sucursal : ISucursal 
@@ -30,13 +35,17 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const [showModalProducto, setShowModalProducto] = useState(false);
     const [showListProductos, setShowListProductos] = useState(true);
     
-    const [alergeno, setAlergeno] = useState<IAlergenos[]>([]);
+    // const [alergeno, setAlergeno] = useState<IAlergenos[]>([]);
     const [categorias, setCategorias] = useState<ICategorias[]>([]);
     const [productos, setProductos] = useState<IProductos[]>([]);
     
-    const alergenoService = new AlergenoService();
+    
+    // const alergenoService = new AlergenoService();
     const categoriaService = new CategoriaService()
     const productoService = new ProductService()   
+    
+    const dispatch = useDispatch();
+
 
 
     const [newProductoNombre, setNewProductoNombre] = useState("");
@@ -45,21 +54,44 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const [newProductoHabilitado, setNewProductoHabilitado] = useState(true);
     const [newProductoCodigo, setNewProductoCodigo] = useState("");
     const [newProductoCategoria, setNewProductoCategoria] = useState(0);
-    const [newProductoAlergeno, setNewProductoAlergeno] = useState<number[]>([]);
     const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<number>(0);
-    const [newProductoImagen, setNewProductoImagen] = useState<{ logo: string }>({ logo: "" });
-    
-    const dispatch = useDispatch();
+    const [newProductoImagen, setNewProductoImagen] = useState<IImagen | null>(null)
 
     useEffect(() => {
         if (sucursal) {
             fetchCategoriasBySucursal(sucursal.id);
             fetchProductosBySucursal(sucursal.id)
-            fetchAllAlergenos()
+
             handleAddProducto()
-            
         }
     }, [sucursal]);
+
+    // -------------- HANDLE MODAL AGREGAR PRODUCTO
+
+    const handleAddProducto = async () => {
+
+        if (newProductoNombre.trim() !== "") {
+            try {
+                const newProducto = await productoService.createProducto({
+                    denominacion: newProductoNombre,
+                    precioVenta: newProdutoPrecio,
+                    descripcion: newProductoDescripcion,
+                    habilitado: newProductoHabilitado,
+                    codigo: newProductoCodigo,
+                    idCategoria: newProductoCategoria,
+                    idAlergenos: [],
+                    imagenes: newProductoImagen ? [newProductoImagen] : [],
+                })
+                setProductos([...productos, newProducto])
+
+            } catch (error) {
+                console.log("Error adding producto:", error);
+            }
+        }
+        setShowModalProducto(false)
+    }
+
+
 
     
     //---------- GET CATEGORIAS POR SUSCURSAL ----------
@@ -87,14 +119,14 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
 
     //--------- GET ALERGENOS -----------------
 
-    const fetchAllAlergenos = async () => {
-        try {
-            const data = await alergenoService.getAllAlergenos();
-            setAlergeno(data);
-        } catch (error) {
-            console.log("Error fetching alergenos:", error);
-        }
-    };
+    // const fetchAllAlergenos = async () => {
+    //     try {
+    //         const data = await alergenoService.getAllAlergenos();
+    //         setAlergeno(data);
+    //     } catch (error) {
+    //         console.log("Error fetching alergenos:", error);
+    //     }
+    // };
 
     //--------- GET PRODUCTOS POR SUCURSAL ----------
 
@@ -143,18 +175,24 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     }
 
     const handleConfirmDelete = async () => {
-        if (productoAEliminar !== null) {
-            try {
-                await productoService.deleteProductoById(productoAEliminar); 
-                console.log("Producto eliminado");
-            } catch (error) {
-                console.log("Error al eliminar producto:", error);
-            } finally {
-                setShowModalDeleteProducto(false); 
-                setProductoAEliminar(null); 
-            }
+    if (productoAEliminar !== null) {
+        try {
+            // Eliminar el producto de la base de datos
+            await productoService.deleteProductoById(productoAEliminar);
+            console.log("Producto eliminado");
+
+            // Actualizar el estado local para eliminar el producto de la lista
+            setProductos((prevProductos) => 
+                prevProductos.filter(producto => producto.id !== productoAEliminar)
+            );
+        } catch (error) {
+            console.log("Error al eliminar producto:", error);
+        } finally {
+            setShowModalDeleteProducto(false);
+            setProductoAEliminar(null);
         }
-    };
+    }
+};
 
     const handleCloseModalDelete = () => {
         setShowModalDeleteProducto(false);  
@@ -162,43 +200,22 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     };
 
 
-    // -------------- HANDLE MODAL AGREGAR PRODUCTO
-
-    const handleAddProducto = async () => {
-        if (newProductoNombre.trim() !== "") {
-            try {
-                const newProducto = await productoService.createProducto({
-                    denominacion: newProductoNombre,
-                    precioVenta: newProdutoPrecio,
-                    descripcion: newProductoDescripcion,
-                    habilitado: newProductoHabilitado,
-                    codigo: newProductoCodigo,
-                    idCategoria: newProductoCategoria,
-                    idAlergenos: newProductoAlergeno,
-                    imagenes: [],
-                })
-                setProductos([...productos, newProducto])
-
-            } catch (error) {
-                console.log("Error adding producto:", error);
-            }
-        }
-        setShowModalProducto(false)
-    }
-
-
+    
     // --------------- HANDLE AGREGAR IMAGEN -------------
 
-    const handleImageSet = (image: string | null) => {
-		if (image) {
-			setNewProductoImagen((prev) => ({ ...prev, logo: image }));
-			dispatch(setImageStringActivo(image));
-		} else {
-			console.error("Error: la imagen no es válida.");
-			setNewProductoImagen((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
-			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
-		}
-	};
+    
+
+    const handleImageSet = (image: IImagen | null) => {
+        if (image) {
+            // Guardar la URL de la imagen en el estado de nuevo producto
+            setNewProductoImagen(image); // Si necesitas guardar el objeto IImagen
+            dispatch(setImageStringActivo(image.url)); // Guardar solo la URL en el estado global
+        } else {
+            console.error("Error: la imagen no es válida.");
+            setNewProductoImagen(null); // Limpiar la imagen si es `null`
+            dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
+        }
+    };
     
     return (
         <div className={styles.homeProductos}>
@@ -382,14 +399,16 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                     <br />
                     <strong>Habilitado:</strong> {selectedProducto?.habilitado ? "Si": "No"}
                     <br />
+                    <strong>Alergenos:</strong> {}
+                    <br />
                     <strong>Imagen:</strong> 
                         {selectedProducto?.imagenes?.length ? (
-                        selectedProducto.imagenes.map((imagen, index) => (
-                            <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ maxWidth: "100px", maxHeight: "100px", margin: "5px" }} />
-                        ))
-                        ) : (
-                        <span>No hay imágenes disponibles</span>
-                        )}
+    selectedProducto.imagenes.map((imagen, index) => (
+        <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ maxWidth: "100px", maxHeight: "100px", margin: "5px" }} />
+    ))
+) : (
+    <span>No hay imágenes disponibles</span>
+)}
                     
                 </Modal.Body>
                 <Modal.Footer>
@@ -471,7 +490,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                             <Form.Label>Categoria</Form.Label>
                             <Form.Control
                                 as="select"
-                                placeholder="Ingresa el nombre del alérgeno"
+                                placeholder="Ingresa el nombre de Categoria"
                                 value={newProductoCategoria}
                                 required
                                 onChange={(e) => setNewProductoCategoria(Number(e.target.value))}
@@ -486,31 +505,32 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                         </Form.Group>
                         {/* <Form.Group controlId="formAlergeno">
                             <Form.Label>Alergenos</Form.Label>
-                            <div>
-                                {alergeno.map((alergenoItem) => (
-                                    <Form.Check
-                                        key={alergenoItem.id}
-                                        type="checkbox"
-                                        label={alergenoItem.denominacion}
-                                        value={alergenoItem.id}
-                                        checked={newProductoAlergeno.includes(alergenoItem.id)}
-                                        onChange={(e) => {
-                                            const id = Number(e.target.value);
-                                            if (e.target.checked) {
-                                                setNewProductoAlergeno([...newProductoAlergeno, id]);
-                                            } else {
-                                                setNewProductoAlergeno(newProductoAlergeno.filter((alergenoId) => alergenoId !== id));
-                                            }
-                                        }}
-                                    />
+                            <Form.Control
+                                as="select"
+                                placeholder="Ingresa alergeno"
+                                required
+                                onChange={(e) => setNewProductoAlergeno([Number(e.target.value)])}
+                            >
+                                <option value="">Seleccione un Alergeno</option>
+                                {alergeno.map((alergeno) => (
+                                    <option key={alergeno.id} value={alergeno.id}>
+                                        {alergeno.denominacion}
+                                    </option>
                                 ))}
-                            </div>
+                            </Form.Control>
                         </Form.Group> */}
                         <Form.Group controlId="formLogo" className={styles.formGroup}>
                             <Form.Label className={styles.formLabel}>Logo</Form.Label>
                             <UploadImageCompany 
-                            image={newProductoImagen.logo}
-                            setImage={handleImageSet}
+                                image={newProductoImagen ? newProductoImagen.url : null} // Pasar solo la URL
+                                setImage={(url) => {
+                                    // Al recibir la URL, puedes crear un objeto IImagen si lo necesitas
+                                    if (url) {
+                                        setNewProductoImagen({ url, name: 'nombre-de-la-imagen' }); // Aquí puedes definir el nombre
+                                    } else {
+                                        setNewProductoImagen(null);
+                                    }
+                                }} // Asegúrate de que setImage reciba una URL
                             />
                         </Form.Group>
                     </Form>
