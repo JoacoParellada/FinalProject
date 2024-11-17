@@ -7,6 +7,7 @@ import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 import { ICreateCategoria } from "../../../types/dtos/categorias/ICreateCategoria";
 import { ModalAgregarCategoria } from "../../modals/ModalAgregarCategoria/ModalAgregarCategoria";
 import { ModalEditarCategoria } from "../../modals/ModalEditarCategoria/ModalEditarCategoria";
+import { ModalAgregarSubCategoria } from "../../modals/ModalAgregarSubcategoria/ModalAgregarSubcategoria";
 
 interface TablaCategoriasProps {
   sucursal: ISucursal | null;
@@ -23,14 +24,19 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     useState<ICategorias | null>(null);
   const [newCategoriaDenominacion, setNewCategoriaDenominacion] = useState("");
 
+  const [showSubCategoriaModal, setShowSubCategoriaModal] = useState(false);
+  const [newSubCategoriaDenominacion, setNewSubCategoriaDenominacion] =
+    useState("");
+
   const fetchCategoriasBySucursal = async (idSucursal: number) => {
     try {
       const data = await categoriaService.getAllCategoriasBySucursal(
         idSucursal
       );
+      console.log("Datos de categorías recibidos:", data); // <--- Verificar aquí
       setCategorias(data);
     } catch (error) {
-      console.log("Error fetching categorias:", error);
+      console.error("Error fetching categorias:", error);
     }
   };
 
@@ -58,16 +64,15 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       };
 
       try {
-        await categoriaService.put(selectedCategoria.id, updatedCategoria); // Llama al método PUT para actualizar
-        setShowEditModal(false);
+        await categoriaService.put(selectedCategoria.id, updatedCategoria);
+        fetchCategoriasBySucursal(sucursal?.id || 0); // Actualiza la lista
+        setShowEditModal(false); // Cierra el modal solo si no hay errores
         setSelectedCategoria(null);
-        fetchCategoriasBySucursal(sucursal?.id || 0);
       } catch (error) {
         console.log("Error updating categoria:", error);
       }
     }
   };
-
   const handleAddCategoria = async () => {
     const newCategoria: ICreateCategoria = {
       denominacion: newCategoriaDenominacion,
@@ -82,6 +87,33 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       setShowAddModal(false);
     } catch (error) {
       console.log("Error adding categoria:", error);
+    }
+  };
+  const handleAddSubCategoria = async () => {
+    if (selectedCategoria) {
+      const newSubCategoria: ICreateCategoria = {
+        denominacion: newSubCategoriaDenominacion, // Denominación de la subcategoría
+        idEmpresa: sucursal?.empresa.id, // ID de la empresa (se mantiene igual)
+        idCategoriaPadre: selectedCategoria.id, // Asegúrate de que esto es el ID de la categoría padre
+      };
+
+      console.log("Subcategoría a crear:", newSubCategoria); // Verifica los datos antes de enviarlos
+
+      try {
+        // Llamada al servicio para agregar la subcategoría
+        await categoriaService.post(newSubCategoria);
+
+        // Limpiar el campo de denominación de la subcategoría
+        setNewSubCategoriaDenominacion("");
+
+        // Refrescar las categorías para reflejar la subcategoría añadida
+        fetchCategoriasBySucursal(sucursal?.id || 0);
+
+        // Cerrar el modal de agregar subcategoría
+        setShowSubCategoriaModal(false);
+      } catch (error) {
+        console.log("Error adding subcategoria:", error);
+      }
     }
   };
 
@@ -107,7 +139,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       </div>
       <Accordion activeKey={activeKey}>
         {categorias.map((categoria) => (
-          <Accordion.Item key={categoria.id} eventKey={String(categoria.id)}>
+          <Accordion.Item
+            key={`categoria-${categoria.id}`}
+            eventKey={String(categoria.id)}
+          >
             <Accordion.Header
               className="d-flex justify-content-between"
               onClick={() => handleToggle(String(categoria.id))}
@@ -122,53 +157,54 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   }}
                   variant="primary"
                   className="me-2"
-                  onClick={() => handleEditClick(categoria)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Detén propagación
+                    handleEditClick(categoria); // Editar categoría
+                  }}
                 >
                   <span className="material-symbols-outlined">edit</span>
                 </Button>
-                <div style={{ display: "flex" }}>
-                  <Button
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "black",
-                    }}
-                    variant="danger"
-                    onClick={async () => {
-                      try {
-                        await categoriaService.delete(categoria.id);
-                        fetchCategoriasBySucursal(sucursal?.id || 0);
-                      } catch (error) {
-                        console.log("Error deleting categoria:", error);
-                      }
-                    }}
-                  >
-                    <span className="material-symbols-outlined">delete</span>
-                  </Button>
-                  <Button
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      color: "black",
-                      marginLeft: "0.5rem",
-                    }}
-                    variant="success"
-                  >
-                    <span className="material-symbols-outlined">add</span>
-                  </Button>
-                </div>
+                <Button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "black",
+                  }}
+                  variant="danger"
+                  onClick={async (e) => {
+                    e.stopPropagation(); // Detén propagación
+                    try {
+                      await categoriaService.delete(categoria.id); // Eliminar categoría
+                      fetchCategoriasBySucursal(sucursal?.id || 0); // Refrescar categorías
+                    } catch (error) {
+                      console.error("Error deleting categoria:", error);
+                    }
+                  }}
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                </Button>
+                <Button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    color: "black",
+                  }}
+                  variant="success"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Detén propagación
+                    setSelectedCategoria(categoria); // Seleccionar la categoría padre
+                    setShowSubCategoriaModal(true); // Abrir el modal de subcategoría
+                  }}
+                >
+                  <span className="material-symbols-outlined">add_circle</span>
+                </Button>
               </div>
             </Accordion.Header>
             <Accordion.Body>
               {categoria.subCategorias && categoria.subCategorias.length > 0 ? (
                 <ul>
                   {categoria.subCategorias.map((subCategoria) => (
-                    <li
-                      key={subCategoria.id}
-                      className="d-flex justify-content-between align-items-center"
-                    >
-                      <span>{subCategoria.denominacion}</span>
-                    </li>
+                    <li key={subCategoria.id}>{subCategoria.denominacion}</li>
                   ))}
                 </ul>
               ) : (
@@ -195,6 +231,13 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
         }}
         categoria={selectedCategoria}
         onSave={handleSaveCategoria}
+      />
+      <ModalAgregarSubCategoria
+        show={showSubCategoriaModal}
+        onHide={() => setShowSubCategoriaModal(false)}
+        onSave={handleAddSubCategoria}
+        denominacion={newSubCategoriaDenominacion}
+        setDenominacion={setNewSubCategoriaDenominacion}
       />
     </div>
   );
