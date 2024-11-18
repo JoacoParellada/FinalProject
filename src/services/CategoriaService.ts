@@ -32,7 +32,7 @@ export class CategoriaService extends BackendClient<ICategorias> {
     const data = await response.json();
     return data as ICategorias[];
   }
-  async create(newCategoria: ICategorias): Promise<ICategorias> {
+  async create(newCategoria: ICreateCategoria): Promise<ICategorias> {
     const response = await fetch(`${this.baseUrl}/create`, {
       method: "POST",
       headers: {

@@ -62,7 +62,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       };
 
       try {
-        await categoriaService.put(selectedCategoria.id, updatedCategoria);
+        await categoriaService.update(selectedCategoria.id, updatedCategoria);
         fetchCategoriasBySucursal(sucursal?.id || 0); // Actualiza la lista
         setShowEditModal(false); // Cierra el modal solo si no hay errores
         setSelectedCategoria(null);
@@ -79,10 +79,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     };
 
     try {
-      await categoriaService.update(selectedCategoria.id, updateCategoria);
+      await categoriaService.create(newCategoria); // Cambié selectedCategoria.id y updateCategoria por newCategoria
       setNewCategoriaDenominacion("");
       fetchCategoriasBySucursal(sucursal?.id || 0);
-      setShowAddModal(false);
+      setShowAddModal(false); // Asegúrate de cerrar el modal después de agregar
     } catch (error) {
       console.log("Error adding categoria:", error);
     }
