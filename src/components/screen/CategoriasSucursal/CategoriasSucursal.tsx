@@ -30,9 +30,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
   const fetchCategoriasBySucursal = async (idSucursal: number) => {
     try {
-      const data = await categoriaService.getAllCategoriasBySucursal(
-        idSucursal
-      );
+      const data = await categoriaService.getAllCategorias();
       console.log("Datos de categorías recibidos:", data); // <--- Verificar aquí
       setCategorias(data);
     } catch (error) {
@@ -81,7 +79,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     };
 
     try {
-      await categoriaService.post(newCategoria);
+      await categoriaService.update(selectedCategoria.id, updateCategoria);
       setNewCategoriaDenominacion("");
       fetchCategoriasBySucursal(sucursal?.id || 0);
       setShowAddModal(false);
@@ -101,7 +99,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
       try {
         // Llamada al servicio para agregar la subcategoría
-        await categoriaService.post(newSubCategoria);
+        await categoriaService.create(newSubCategoria);
 
         // Limpiar el campo de denominación de la subcategoría
         setNewSubCategoriaDenominacion("");
@@ -188,6 +186,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                     display: "flex",
                     alignItems: "center",
                     color: "black",
+                    marginLeft: "0.5rem",
                   }}
                   variant="success"
                   onClick={(e) => {

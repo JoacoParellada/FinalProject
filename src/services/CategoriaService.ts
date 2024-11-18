@@ -8,6 +8,11 @@ export class CategoriaService extends BackendClient<ICategorias> {
   constructor() {
     super(BASEURL + "/categorias");
   }
+  async getAllCategorias(): Promise<ICategorias[]> {
+    const response = await fetch(`${this.baseUrl}`);
+    const data = await response.json();
+    return data as ICategorias[];
+  }
 
   async getAllCategoriasBySucursal(idSucursal: number): Promise<ICategorias[]> {
     const response = await fetch(
@@ -27,7 +32,7 @@ export class CategoriaService extends BackendClient<ICategorias> {
     const data = await response.json();
     return data as ICategorias[];
   }
-  async post(newCategoria: ICategorias): Promise<ICategorias> {
+  async create(newCategoria: ICategorias): Promise<ICategorias> {
     const response = await fetch(`${this.baseUrl}/create`, {
       method: "POST",
       headers: {
@@ -43,7 +48,7 @@ export class CategoriaService extends BackendClient<ICategorias> {
     const data = await response.json();
     return data as ICategorias;
   }
-  async put(
+  async update(
     id: number,
     updatedCategoria: IUpdateCategoria
   ): Promise<ICategorias> {
