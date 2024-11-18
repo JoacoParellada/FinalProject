@@ -6,7 +6,7 @@ export interface ICategorias {
   denominacion: string;
   eliminado: boolean;
   sucursales: ISucursal[];
-  subCategorias: ICategorias[];
+  subCategorias?: ICategorias[];
   categoriaPadre?: ICategorias | null;
   articulos: IProductos | null;
 }
