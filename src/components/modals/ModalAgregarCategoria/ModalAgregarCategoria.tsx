@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { ICreateCategoria } from "../../../types/dtos/categorias/ICreateCategoria";
 
 interface ModalAgregarCategoriaProps {
   show: boolean;

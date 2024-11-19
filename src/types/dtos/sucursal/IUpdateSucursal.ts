@@ -1,5 +1,5 @@
-import { ICategorias } from "../../ICategorias";
 import { baseDto } from "../baseDto/baseDto";
+import { ICategorias } from "../categorias/ICategorias";
 
 export interface IUpdateSucursal extends baseDto {
   nombre: string;
