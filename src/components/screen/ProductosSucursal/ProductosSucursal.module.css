@@ -47,8 +47,9 @@
   padding: 8px;
 }
 
-.actionsButtons {
+.buttonsProduct {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
