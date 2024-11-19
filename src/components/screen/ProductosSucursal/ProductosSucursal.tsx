@@ -277,7 +277,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                             <div><Button onClick={() => handleDescripcionProducto(producto)}>Descripcion</Button></div>
                             <div>{producto.categoria.denominacion}</div>
                             <div>{producto.habilitado ? "Si" : "No"}</div>
-                            <div className={styles.actionsButtons}>
+                            <div className={styles.buttonsProduct}>
                                 <Button
                                     className="d-flex align-items-center"
                                     onClick={()=>handleVerProducto(producto)}
@@ -288,17 +288,6 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                                     style={{ color: "black" }}
                                     >
                                     visibility
-                                    </span>
-                                </Button>
-                                <Button
-                                    className="d-flex align-items-center"
-                                    variant="primary"
-                                >
-                                    <span
-                                    className="material-symbols-outlined"
-                                    style={{ color: "black" }}
-                                    >
-                                    edit
                                     </span>
                                 </Button>
                                 <Button
