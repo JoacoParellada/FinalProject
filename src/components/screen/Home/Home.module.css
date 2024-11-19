@@ -1,7 +1,8 @@
 .mainContainer {
   width: 100%;
-  height: 100vh;
+  height: 100vh; /* O puedes usar 'auto' si no necesitas que ocupe toda la altura */
   display: flex;
+  flex-direction: column; /* Cambia la dirección a columna para que el header esté arriba */
   background-color: #f4f4f4;
 }
 
@@ -12,6 +13,7 @@
 }
 
 .empresasSection {
+  height: 100%;
   width: 30%;
   background-color: #1b5939ff;
   padding: 20px;
