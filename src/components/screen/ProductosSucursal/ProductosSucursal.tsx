@@ -150,11 +150,11 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const handleConfirmDelete = async () => {
     if (productoAEliminar !== null) {
         try {
-            // Eliminar el producto de la base de datos
+            
             await productoService.deleteProductoById(productoAEliminar);
             console.log("Producto eliminado");
 
-            // Actualizar el estado local para eliminar el producto de la lista
+            
             setProductos((prevProductos) => 
                 prevProductos.filter(producto => producto.id !== productoAEliminar)
             );

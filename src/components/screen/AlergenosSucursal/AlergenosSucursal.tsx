@@ -5,7 +5,7 @@ import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { AlergenoService } from "../../../services/AlergenoService";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
 
-// Definición de la interfaz para los props
+
 interface TablaAlergenosProps {
   sucursal: ISucursal | null;
   onSelect: () => void;
@@ -23,7 +23,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
 
   const alergenoService = new AlergenoService();
 
-  // Función para obtener todos los alérgenos desde la API
+  // Función para obtener todos los alérgenos
   const fetchAllAlergenos = async () => {
     try {
       const data = await alergenoService.getAllAlergenos();
@@ -33,7 +33,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
     }
   };
 
-  // Función para agregar un nuevo alérgeno a través de la API
+  // Función para agregar un nuevo alérgeno 
   const handleAddAlergeno = async () => {
     if (newAlergenoNombre.trim() !== "") {
       try {
@@ -68,8 +68,8 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
 
       try {
         await alergenoService.updateAlergeno(editingAlergeno.id, updatedAlergeno);
-        fetchAllAlergenos(); // Actualiza la lista
-        setShowModal(false); // Cierra el modal solo si no hay errores
+        fetchAllAlergenos(); 
+        setShowModal(false);
       } catch (error) {
         console.log("Error updating categoria:", error);
       }
@@ -89,10 +89,10 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
 
   const handleViewAlergeno = (alergeno: IAlergenos) => {
     setSelectedAlergeno(alergeno);
-    setShowViewModal(true); // Muestra el modal de visualización
+    setShowViewModal(true);
   };
 
-  // useEffect para cargar los alérgenos al iniciar el componente
+
   useEffect(() => {
     fetchAllAlergenos();
   }, []);
@@ -170,7 +170,6 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
         </ListGroup>
       </div>
 
-      {/* Modal para agregar o editar alérgeno */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -198,9 +197,9 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
             variant="primary"
             onClick={() => {
               if (editingAlergeno) {
-                handleSaveAlergeno(newAlergenoNombre); // Pasa el nombre del alérgeno
+                handleSaveAlergeno(newAlergenoNombre); 
               } else {
-                handleAddAlergeno(); // Llama a la función para agregar
+                handleAddAlergeno(); 
               }
             }}
           >
@@ -217,7 +216,6 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
           {selectedAlergeno ? (
             <div>
               <h5>Nombre: {selectedAlergeno.denominacion}</h5>
-              {/* Aquí puedes agregar más detalles del alérgeno si es necesario */}
             </div>
           ) : (
             <p>No se seleccionó ningún alérgeno.</p>

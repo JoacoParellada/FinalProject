@@ -19,7 +19,7 @@ export const ModalEditarEmpresa: FC<ModalEditarEmpresaProps> = ({
     const [empresa, setEmpresa] = useState(empresaInicial);
 
     useEffect(() => {
-      setEmpresa(empresaInicial); // Actualiza el estado si cambia `empresaInicial`
+        setEmpresa(empresaInicial); 
     }, [empresaInicial]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

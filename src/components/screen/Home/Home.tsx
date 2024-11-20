@@ -1,17 +1,17 @@
 import { Button, Spinner, Alert } from "react-bootstrap";
-import styles from "./Home.module.css"; // Asegúrate de que este archivo exista y tenga los estilos
+import styles from "./Home.module.css"; 
 import { useState, useEffect } from "react";
 import { EmpresaService } from "../../../services/EmpresaService";
 import { SucursalService } from "../../../services/SucursalService";
 import { IEmpresa } from "../../../types/dtos/empresa/IEmpresa";
 import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
-import { HeaderEmpresa } from "../HeaderEmpresa/HeaderEmpresa"; // Importa el HeaderEmpresa
+import { HeaderEmpresa } from "../HeaderEmpresa/HeaderEmpresa"; 
 import { ModalAgregarSucursal } from "../../modals/ModalAgregarSucursal/ModalAgregarSucursal";
-import { ModalVerSucursal } from "../../modals/ModalVerSucursal/ModalVerSucursal";
 import { ICreateSucursal } from "../../../types/dtos/sucursal/ICreateSucursal";
 import { CardEmpresa } from "../../ui/CardEmpresa/CardEmpresa";
 import { CardSucursal } from "../../ui/CardSucursal/CardSucursal";
-import { ModalAgregarEmpresa } from "../../modals/ModalAgregarEmpresa/ModalAgregarEmpresa";
+import { ModalAgregarEmpresa } from "../../modals/modalAgregarEmpresa/ModalAgregarEmpresa";
+
 
 export const Home = () => {
   const [showModalEmpresa, setShowModalEmpresa] = useState(false);
@@ -63,7 +63,7 @@ export const Home = () => {
   const handleSaveSucursal = async (nuevaSucursal: ICreateSucursal) => {
     if (!selectedEmpresa) {
       console.error("Error: No se ha seleccionado una empresa válida.");
-      return; // No proceder si no hay empresa seleccionada
+      return; 
     }
 
     try {
@@ -104,12 +104,7 @@ export const Home = () => {
 
   return (
     <div className={styles.mainContainer}>
-      {selectedEmpresa && ( // Solo muestra el HeaderEmpresa si hay una empresa seleccionada
-        <HeaderEmpresa
-          nombreEmpresa={selectedEmpresa.nombre}
-          onAgregarSucursal={() => setShowModalSucursal(true)} // Asegúrate de que esta función esté definida
-        />
-      )}
+      
       <div className={styles.contentWrapper}>
         <div className={styles.empresasSection}>
           <div className={styles.empresasHeader}>
@@ -135,21 +130,29 @@ export const Home = () => {
             ))}
           </div>
         </div>
-
-        <div className={styles.sucursalesSection}>
-          {loadingSucursales && <Spinner animation="border" />}
-          {errorSucursales && <Alert variant="danger">{errorSucursales}</Alert>}
-          <div className={styles.sucursalesList}>
-            {sucursales.map((sucursal) => (
-              <CardSucursal
-                key={sucursal.id}
-                sucursal={sucursal}
-                onSelect={() => handleSelectSucursal(sucursal)}
-              />
-            ))}
+        <div  className={styles.sucursalesSection}>
+          {selectedEmpresa && ( 
+            <HeaderEmpresa
+              nombreEmpresa={selectedEmpresa.nombre}
+              onAgregarSucursal={() => setShowModalSucursal(true)} 
+            />
+          )}
+          <div>
+              {loadingSucursales && <Spinner animation="border" />}
+              {errorSucursales && <Alert variant="danger">{errorSucursales}</Alert>}
+              <div className={styles.sucursalesList}>
+                {sucursales.map((sucursal) => (
+                  <CardSucursal
+                    key={sucursal.id}
+                    sucursal={sucursal}
+                    onSelect={() => handleSelectSucursal(sucursal)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        
       <ModalAgregarEmpresa
         show={showModalEmpresa}
         handleClose={handleCloseEmpresa}
@@ -159,11 +162,6 @@ export const Home = () => {
         handleClose={handleCloseSucursal}
         onSave={handleSaveSucursal}
         idEmpresa={selectedEmpresa?.id || 0}
-      />
-      <ModalVerSucursal
-        show={!!selectedSucursal}
-        handleClose={handleCloseSucursal}
-        sucursal={selectedSucursal}
       />
     </div>
   );
