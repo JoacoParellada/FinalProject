@@ -35,7 +35,7 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
       onClick={handleCardClick}
     >
       <Card.Body className={styles.bodyCard}>
-        {/* Mostrar el logo de la empresa si está disponible */}
+        
         {empresa.logo && (
           <img
             src={empresa.logo}

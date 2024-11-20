@@ -31,7 +31,7 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 		logo: "",
 	});
 
-	// Rellenar la empresa cuando hay una empresa activa
+
 	useEffect(() => {
 		if (empresaActiva) {
 			setNuevaEmpresa({
@@ -53,37 +53,37 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 			dispatch(setImageStringActivo(image));
 		} else {
 			console.error("Error: la imagen no es válida.");
-			setNuevaEmpresa((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
-			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
+			setNuevaEmpresa((prev) => ({ ...prev, logo: "" })); 
+			dispatch(removeImageActivo());
 		}
 	};
 
-	// Manejo de la presentación del formulario
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
 			if (empresaActiva) {
-				// Actualizar empresa existente
+
 				await empresaService.updateEmpresa(empresaActiva.id, {
 					...nuevaEmpresa,
 					logo: imageActivo,
 				});
 			} else {
-				// Crear nueva empresa
+
 				await empresaService.createEmpresa({
 					...nuevaEmpresa,
 					logo: imageActivo,
 				});
 			}
-			handleClose(); // Cerrar el modal
+			handleClose(); 
 			setNuevaEmpresa({
 				nombre: "",
 				razonSocial: "",
 				cuit: "",
 				logo: "",
-			}); // Resetear estado de la empresa
-			dispatch(removeImageActivo()); // Limpiar la imagen activa
-			dispatch(removeEmpresaActiva()); // Limpiar la empresa activa
+			}); 
+			dispatch(removeImageActivo());
+			dispatch(removeEmpresaActiva());
 		} catch (error) {
 			console.error("Error al guardar la empresa:", error);
 		}
@@ -145,7 +145,6 @@ export const ModalAgregarEmpresa: FC<ModalAgregarEmpresaProps> = ({
 					</Form.Group>
 					<Form.Group className="mb-3">
 						<Form.Label>Logo</Form.Label>
-						{/* Integración del componente de subida de imagen */}
 						<UploadImageCompany
 							image={nuevaEmpresa.logo}
 							setImage={handleImageSet}
