@@ -30,8 +30,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
   const fetchCategoriasBySucursal = async (idSucursal: number) => {
     try {
-      const data = await categoriaService.getAllCategorias();
-      console.log("Datos de categorías recibidos:", data); 
+      const data = await categoriaService.getAllCategoriasBySucursal(
+        idSucursal
+      );
+      console.log("Datos de categorías recibidos:", data);
       setCategorias(data);
     } catch (error) {
       console.error("Error fetching categorias:", error);
@@ -50,7 +52,7 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
   const handleEditClick = (categoria: ICategorias) => {
     setSelectedCategoria(categoria);
-    setNewCategoriaDenominacion(categoria.denominacion); 
+    setNewCategoriaDenominacion(categoria.denominacion);
     setShowEditModal(true);
   };
 
@@ -63,8 +65,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
       try {
         await categoriaService.update(selectedCategoria.id, updatedCategoria);
-        fetchCategoriasBySucursal(sucursal?.id || 0); 
-        setShowEditModal(false); 
+        fetchCategoriasBySucursal(sucursal?.id || 0);
+        setShowEditModal(false);
         setSelectedCategoria(null);
       } catch (error) {
         console.log("Error updating categoria:", error);
@@ -79,10 +81,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     };
 
     try {
-      await categoriaService.create(newCategoria); 
+      await categoriaService.create(newCategoria);
       setNewCategoriaDenominacion("");
       fetchCategoriasBySucursal(sucursal?.id || 0);
-      setShowAddModal(false); 
+      setShowAddModal(false);
     } catch (error) {
       console.log("Error adding categoria:", error);
     }
@@ -91,23 +93,19 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     if (selectedCategoria) {
       const newSubCategoria: ICreateCategoria = {
         denominacion: newSubCategoriaDenominacion,
-        idEmpresa: sucursal?.empresa.id, 
-        idCategoriaPadre: selectedCategoria.id, 
+        idEmpresa: sucursal?.empresa.id,
+        idCategoriaPadre: selectedCategoria.id,
       };
 
-      console.log("Subcategoría a crear:", newSubCategoria); 
+      console.log("Subcategoría a crear:", newSubCategoria);
 
       try {
-        
         await categoriaService.create(newSubCategoria);
 
-        
         setNewSubCategoriaDenominacion("");
 
-        
         fetchCategoriasBySucursal(sucursal?.id || 0);
 
-        
         setShowSubCategoriaModal(false);
       } catch (error) {
         console.log("Error adding subcategoria:", error);
@@ -120,8 +118,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       <div>
         <Button
           onClick={() => {
-            setNewCategoriaDenominacion(""); 
-            setShowAddModal(true); 
+            setNewCategoriaDenominacion("");
+            setShowAddModal(true);
           }}
           variant="dark"
           className={styles.buttonCategorias}
@@ -156,8 +154,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   variant="primary"
                   className="me-2"
                   onClick={(e) => {
-                    e.stopPropagation(); 
-                    handleEditClick(categoria); 
+                    e.stopPropagation();
+                    handleEditClick(categoria);
                   }}
                 >
                   <span className="material-symbols-outlined">edit</span>
@@ -170,10 +168,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   }}
                   variant="danger"
                   onClick={async (e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation();
                     try {
-                      await categoriaService.delete(categoria.id); 
-                      fetchCategoriasBySucursal(sucursal?.id || 0); 
+                      await categoriaService.delete(categoria.id);
+                      fetchCategoriasBySucursal(sucursal?.id || 0);
                     } catch (error) {
                       console.error("Error deleting categoria:", error);
                     }
@@ -190,9 +188,9 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   }}
                   variant="success"
                   onClick={(e) => {
-                    e.stopPropagation(); 
-                    setSelectedCategoria(categoria); 
-                    setShowSubCategoriaModal(true); 
+                    e.stopPropagation();
+                    setSelectedCategoria(categoria);
+                    setShowSubCategoriaModal(true);
                   }}
                 >
                   <span className="material-symbols-outlined">add_circle</span>

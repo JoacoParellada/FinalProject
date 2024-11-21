@@ -100,8 +100,8 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    fetchEmpresas();
-  }, []);
+    if(!showModalEmpresa)fetchEmpresas();
+  }, [showModalEmpresa]);
 
   return (
     <div className={styles.mainContainer}>
