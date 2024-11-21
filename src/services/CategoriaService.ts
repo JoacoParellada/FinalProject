@@ -16,7 +16,7 @@ export class CategoriaService extends BackendClient<ICategorias> {
 
   async getAllCategoriasBySucursal(idSucursal: number): Promise<ICategorias[]> {
     const response = await fetch(
-      `${this.baseUrl}/allCategoriasPorSucursal/${idSucursal}`
+      `${this.baseUrl}/allCategoriasPadrePorSucursal/${idSucursal}`
     );
     const data = await response.json();
     return data as ICategorias[];

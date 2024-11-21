@@ -1,6 +1,7 @@
-/* src/components/SucursalCard/SucursalCard.module.css */
+
 .sucursalCard {
   width: 350px;
+  height: 100%;
   margin: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
@@ -11,22 +12,36 @@
 }
 
 .cardHeader {
+  height: 40%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+}
+
+.cardTitle{
+  font-size: auto;
+  width: 70%;
 }
 
 .casaMatrizBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60%;
+  width: 80px;
   background-color: #28a745;
   color: white;
-  padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
+}
+
+
+.cardBody{
+  height: 25%;
 }
 
 .cardActions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+
 }

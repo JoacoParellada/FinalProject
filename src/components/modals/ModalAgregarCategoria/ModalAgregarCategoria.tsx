@@ -4,9 +4,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 interface ModalAgregarCategoriaProps {
   show: boolean;
   onHide: () => void;
-  onSave: (denominacion: string) => void; // Cambiamos la función para recibir solo la denominación
-  denominacion: string; // La denominación de la nueva categoría
-  setDenominacion: (denominacion: string) => void; // Función para actualizar la denominación
+  onSave: (denominacion: string) => void; 
+  denominacion: string; 
+  setDenominacion: (denominacion: string) => void;
 }
 
 export const ModalAgregarCategoria: FC<ModalAgregarCategoriaProps> = ({

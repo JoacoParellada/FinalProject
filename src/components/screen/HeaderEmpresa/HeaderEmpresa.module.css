@@ -4,7 +4,6 @@
   justify-content: space-between;
   background-color: #272627;
   color: #fff;
-  padding: 20px;
-  width: 100%; /* Asegúrate de que ocupe todo el ancho */
-  z-index: 1; /* Asegúrate de que esté por encima de otros elementos si es necesario */
+  padding: 2% 5%;
+  width: auto
 }

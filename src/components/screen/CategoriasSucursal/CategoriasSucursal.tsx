@@ -30,8 +30,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
   const fetchCategoriasBySucursal = async (idSucursal: number) => {
     try {
-      const data = await categoriaService.getAllCategorias();
-      console.log("Datos de categorías recibidos:", data); // <--- Verificar aquí
+      const data = await categoriaService.getAllCategoriasBySucursal(
+        idSucursal
+      );
+      console.log("Datos de categorías recibidos:", data);
       setCategorias(data);
     } catch (error) {
       console.error("Error fetching categorias:", error);
@@ -50,8 +52,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
   const handleEditClick = (categoria: ICategorias) => {
     setSelectedCategoria(categoria);
-    setNewCategoriaDenominacion(categoria.denominacion); // Establecer la denominación actual
-    setShowEditModal(true); // Abrir el modal de edición
+    setNewCategoriaDenominacion(categoria.denominacion);
+    setShowEditModal(true);
   };
 
   const handleSaveCategoria = async (denominacion: string) => {
@@ -63,8 +65,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
 
       try {
         await categoriaService.update(selectedCategoria.id, updatedCategoria);
-        fetchCategoriasBySucursal(sucursal?.id || 0); // Actualiza la lista
-        setShowEditModal(false); // Cierra el modal solo si no hay errores
+        fetchCategoriasBySucursal(sucursal?.id || 0);
+        setShowEditModal(false);
         setSelectedCategoria(null);
       } catch (error) {
         console.log("Error updating categoria:", error);
@@ -79,10 +81,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
     };
 
     try {
-      await categoriaService.create(newCategoria); // Cambié selectedCategoria.id y updateCategoria por newCategoria
+      await categoriaService.create(newCategoria);
       setNewCategoriaDenominacion("");
       fetchCategoriasBySucursal(sucursal?.id || 0);
-      setShowAddModal(false); // Asegúrate de cerrar el modal después de agregar
+      setShowAddModal(false);
     } catch (error) {
       console.log("Error adding categoria:", error);
     }
@@ -90,24 +92,20 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
   const handleAddSubCategoria = async () => {
     if (selectedCategoria) {
       const newSubCategoria: ICreateCategoria = {
-        denominacion: newSubCategoriaDenominacion, // Denominación de la subcategoría
-        idEmpresa: sucursal?.empresa.id, // ID de la empresa (se mantiene igual)
-        idCategoriaPadre: selectedCategoria.id, // Asegúrate de que esto es el ID de la categoría padre
+        denominacion: newSubCategoriaDenominacion,
+        idEmpresa: sucursal?.empresa.id,
+        idCategoriaPadre: selectedCategoria.id,
       };
 
-      console.log("Subcategoría a crear:", newSubCategoria); // Verifica los datos antes de enviarlos
+      console.log("Subcategoría a crear:", newSubCategoria);
 
       try {
-        // Llamada al servicio para agregar la subcategoría
         await categoriaService.create(newSubCategoria);
 
-        // Limpiar el campo de denominación de la subcategoría
         setNewSubCategoriaDenominacion("");
 
-        // Refrescar las categorías para reflejar la subcategoría añadida
         fetchCategoriasBySucursal(sucursal?.id || 0);
 
-        // Cerrar el modal de agregar subcategoría
         setShowSubCategoriaModal(false);
       } catch (error) {
         console.log("Error adding subcategoria:", error);
@@ -120,8 +118,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
       <div>
         <Button
           onClick={() => {
-            setNewCategoriaDenominacion(""); // Limpiar el campo de denominación
-            setShowAddModal(true); // Abrir el modal para agregar una nueva categoría
+            setNewCategoriaDenominacion("");
+            setShowAddModal(true);
           }}
           variant="dark"
           className={styles.buttonCategorias}
@@ -156,8 +154,8 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   variant="primary"
                   className="me-2"
                   onClick={(e) => {
-                    e.stopPropagation(); // Detén propagación
-                    handleEditClick(categoria); // Editar categoría
+                    e.stopPropagation();
+                    handleEditClick(categoria);
                   }}
                 >
                   <span className="material-symbols-outlined">edit</span>
@@ -170,10 +168,10 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   }}
                   variant="danger"
                   onClick={async (e) => {
-                    e.stopPropagation(); // Detén propagación
+                    e.stopPropagation();
                     try {
-                      await categoriaService.delete(categoria.id); // Eliminar categoría
-                      fetchCategoriasBySucursal(sucursal?.id || 0); // Refrescar categorías
+                      await categoriaService.delete(categoria.id);
+                      fetchCategoriasBySucursal(sucursal?.id || 0);
                     } catch (error) {
                       console.error("Error deleting categoria:", error);
                     }
@@ -190,9 +188,9 @@ export const CategoriasSucursal: FC<TablaCategoriasProps> = ({ sucursal }) => {
                   }}
                   variant="success"
                   onClick={(e) => {
-                    e.stopPropagation(); // Detén propagación
-                    setSelectedCategoria(categoria); // Seleccionar la categoría padre
-                    setShowSubCategoriaModal(true); // Abrir el modal de subcategoría
+                    e.stopPropagation();
+                    setSelectedCategoria(categoria);
+                    setShowSubCategoriaModal(true);
                   }}
                 >
                   <span className="material-symbols-outlined">add_circle</span>

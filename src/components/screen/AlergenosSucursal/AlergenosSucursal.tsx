@@ -5,7 +5,7 @@ import { ISucursal } from "../../../types/dtos/sucursal/ISucursal";
 import { AlergenoService } from "../../../services/AlergenoService";
 import { IAlergenos } from "../../../types/dtos/alergenos/IAlergenos";
 
-// Definición de la interfaz para los props
+
 interface TablaAlergenosProps {
   sucursal: ISucursal | null;
   onSelect: () => void;
@@ -14,6 +14,8 @@ interface TablaAlergenosProps {
 export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
   const [alergenos, setAlergenos] = useState<IAlergenos[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [selectedAlergeno, setSelectedAlergeno] = useState<IAlergenos | null>(null);
   const [newAlergenoNombre, setNewAlergenoNombre] = useState("");
   const [editingAlergeno, setEditingAlergeno] = useState<IAlergenos | null>(
     null
@@ -21,7 +23,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
 
   const alergenoService = new AlergenoService();
 
-  // Función para obtener todos los alérgenos desde la API
+  // Función para obtener todos los alérgenos
   const fetchAllAlergenos = async () => {
     try {
       const data = await alergenoService.getAllAlergenos();
@@ -31,7 +33,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
     }
   };
 
-  // Función para agregar un nuevo alérgeno a través de la API
+  // Función para agregar un nuevo alérgeno 
   const handleAddAlergeno = async () => {
     if (newAlergenoNombre.trim() !== "") {
       try {
@@ -46,6 +48,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
         console.log("Error adding alergeno:", error);
       }
     }
+    fetchAllAlergenos();
   };
 
   // Función para editar un alérgeno desde la API
@@ -56,25 +59,19 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
   };
 
   // Función para guardar el alérgeno editado
-  const handleSaveAlergeno = async () => {
+  const handleSaveAlergeno = async (denominacion: string) => {
     if (editingAlergeno) {
+      const updatedAlergeno: IAlergenos = {
+        ...editingAlergeno,
+        denominacion,
+      };
+
       try {
-        const updatedAlergeno = await alergenoService.updateAlergeno(
-          editingAlergeno.id,
-          {
-            denominacion: newAlergenoNombre,
-            imagen: editingAlergeno.imagen, // Mantener la imagen actual si no se actualiza
-          }
-        );
-        const updatedAlergenos = alergenos.map((alergeno) =>
-          alergeno.id === updatedAlergeno.id ? updatedAlergeno : alergeno
-        );
-        setAlergenos(updatedAlergenos);
+        await alergenoService.updateAlergeno(editingAlergeno.id, updatedAlergeno);
+        fetchAllAlergenos(); 
         setShowModal(false);
-        setEditingAlergeno(null);
-        setNewAlergenoNombre("");
       } catch (error) {
-        console.log("Error updating alergeno:", error);
+        console.log("Error updating categoria:", error);
       }
     }
   };
@@ -87,9 +84,15 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
     } catch (error) {
       console.log("Error deleting alergeno:", error);
     }
+    fetchAllAlergenos();
   };
 
-  // useEffect para cargar los alérgenos al iniciar el componente
+  const handleViewAlergeno = (alergeno: IAlergenos) => {
+    setSelectedAlergeno(alergeno);
+    setShowViewModal(true);
+  };
+
+
   useEffect(() => {
     fetchAllAlergenos();
   }, []);
@@ -101,8 +104,8 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
           variant="dark"
           onClick={() => {
             setShowModal(true);
-            setEditingAlergeno(null); // Resetear estado de edición cuando agregamos un nuevo alérgeno
-            setNewAlergenoNombre(""); // Limpiar el campo de nombre
+            setEditingAlergeno(null); 
+            setNewAlergenoNombre(""); 
           }}
           style={{
             display: "flex",
@@ -128,7 +131,7 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
                 <Button
                   className="d-flex align-items-center"
                   variant="warning"
-                  onClick={() => handleEditAlergeno(alergeno)}
+                  onClick={() => handleViewAlergeno(alergeno)}
                 >
                   <span
                     className="material-symbols-outlined"
@@ -167,7 +170,6 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
         </ListGroup>
       </div>
 
-      {/* Modal para agregar o editar alérgeno */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -193,9 +195,35 @@ export const AlergenosSucursal: FC<TablaAlergenosProps> = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={editingAlergeno ? handleSaveAlergeno : handleAddAlergeno}
+            onClick={() => {
+              if (editingAlergeno) {
+                handleSaveAlergeno(newAlergenoNombre); 
+              } else {
+                handleAddAlergeno(); 
+              }
+            }}
           >
             {editingAlergeno ? "Guardar" : "Agregar"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles del Alérgeno</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedAlergeno ? (
+            <div>
+              <h5>Nombre: {selectedAlergeno.denominacion}</h5>
+            </div>
+          ) : (
+            <p>No se seleccionó ningún alérgeno.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+            Cerrar
           </Button>
         </Modal.Footer>
       </Modal>

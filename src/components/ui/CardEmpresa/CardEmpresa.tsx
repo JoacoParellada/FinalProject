@@ -11,11 +11,13 @@ interface CardEmpresaProps {
 }
 
 export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
+  const [empresaActual, setEmpresaActual] = useState<IEmpresa>(empresa); // Estado local para la empresa
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
 
   const handleSave = (empresaEditada: IEmpresa) => {
     console.log("Empresa editada:", empresaEditada);
+    setEmpresaActual(empresaEditada); // Actualizar el estado local con la empresa editada
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -35,17 +37,16 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
       onClick={handleCardClick}
     >
       <Card.Body className={styles.bodyCard}>
-        {/* Mostrar el logo de la empresa si está disponible */}
-        {empresa.logo && (
+        {empresaActual.logo && (
           <img
-            src={empresa.logo}
-            alt={`${empresa.nombre} logo`}
+            src={empresaActual.logo}
+            alt={`${empresaActual.nombre} logo`}
             className={styles.empresaLogo}
             style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
         )}
 
-        <Card.Title className="text-black">{empresa.nombre}</Card.Title>
+        <Card.Title className="text-black">{empresaActual.nombre}</Card.Title>
         <div className={styles.containerButtons} onClick={preventPropagation}>
           <Button
             className="d-flex align-items-center"
@@ -82,13 +83,13 @@ export const CardEmpresa: FC<CardEmpresaProps> = ({ empresa, onSelect }) => {
       <ModalVerEmpresa
         showModal={showModal}
         handleClose={() => setShowModal(false)}
-        empresa={empresa}
+        empresa={empresaActual} // Pasar la empresa actualizada al modal de visualización
       />
       <ModalEditarEmpresa
         show={showModalEdit}
         handleClose={() => setShowModalEdit(false)}
-        onSave={handleSave}
-        empresaInicial={empresa}
+        onSave={handleSave} // Llamar al manejador que actualiza el estado local
+        empresaInicial={empresaActual} // Pasar la empresa actual al modal de edición
       />
     </Card>
   );

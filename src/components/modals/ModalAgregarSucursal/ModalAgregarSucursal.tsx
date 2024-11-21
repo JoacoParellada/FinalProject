@@ -130,14 +130,14 @@ export const ModalAgregarSucursal: FC<ModalAgregarSucursalProps> = ({
     }));
   };
 
- 	const handleImageSet = (image: string | null) => {
+  const handleImageSet = (image: string | null) => {
 		if (image) {
 			setNuevaSucursal((prev) => ({ ...prev, logo: image }));
 			dispatch(setImageStringActivo(image));
 		} else {
 			console.error("Error: la imagen no es válida.");
-			setNuevaSucursal((prev) => ({ ...prev, logo: "" })); // Limpiar el logo si es `null`
-			dispatch(removeImageActivo()); // Limpiar la imagen activa en el estado global
+			setNuevaSucursal((prev) => ({ ...prev, logo: "" }));
+			dispatch(removeImageActivo()); 
 		}
 	};
 

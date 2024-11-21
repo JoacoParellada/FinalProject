@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"; // Agregar useEffect
+import { FC, useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { ICategorias } from "../../../types/dtos/categorias/ICategorias";
 
@@ -17,7 +17,6 @@ export const ModalEditarCategoria: FC<ModalEditarCategoriaProps> = ({
 }) => {
   const [denominacion, setDenominacion] = useState("");
 
-  // Usar useEffect para actualizar el estado cuando cambie la categoría
   useEffect(() => {
     if (categoria) {
       setDenominacion(categoria.denominacion);
