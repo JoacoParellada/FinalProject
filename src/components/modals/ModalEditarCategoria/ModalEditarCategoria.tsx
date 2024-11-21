@@ -25,7 +25,7 @@ export const ModalEditarCategoria: FC<ModalEditarCategoriaProps> = ({
 
   const handleSave = () => {
     onSave(denominacion);
-    //onHide();
+    
   };
 
   return (
