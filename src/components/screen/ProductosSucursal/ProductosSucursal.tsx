@@ -29,6 +29,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     
     const [categorias, setCategorias] = useState<ICategorias[]>([]);
     const [productos, setProductos] = useState<IProductos[]>([]);
+    const [subCategorias, setSubCategorias] = useState<ICategorias[]>([]);
     
     const categoriaService = new CategoriaService()
     const productoService = new ProductService()   
@@ -42,6 +43,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     const [newProductoCategoria, setNewProductoCategoria] = useState(0);
     const [categoriaSeleccionadaId, setCategoriaSeleccionadaId] = useState<number>(0);
     const [newProductoImagen, setNewProductoImagen] = useState<IImagen | null>(null)
+    const [newProductoSubcategoria, setNewProductoSubcategoria] = useState(0);
 
     useEffect(() => {
         if (sucursal) {
@@ -80,6 +82,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
 
     
     //---------- GET CATEGORIAS POR SUSCURSAL ----------
+
     const fetchCategoriasBySucursal = async (idSucursal: number) => {
         try {
             const data = await categoriaService.getAllCategoriasBySucursal(idSucursal);
@@ -90,15 +93,32 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     };
 
 
-    const handleCategoriaSelect = (categoria: ICategorias) => {
+    const handleCategoriaSelect = async (categoria: ICategorias) => {
         setCategoriaSeleccionadaId(categoria.id);
-        if(categoria.denominacion === "MENU"){
-            setShowListProductos(true)
-        }else{
-            setShowListProductos(false)
+        setNewProductoCategoria(categoria.id); 
+        if (categoria.denominacion === "MENU") {
+            setShowListProductos(true);
+        } else {
+            setShowListProductos(false);
         }
-        
-        
+    };
+
+    //---------- GET SUBCATEGORIAS POR SUSCURSAL ----------
+
+
+    const fetchSubcategoriasByCategoriaPadre = async (idSucursal: number, idCategoria: number) => {
+        try {
+            const data = await categoriaService.getAllsubcategoriasByCategoriaPadre(idSucursal, idCategoria);
+            setSubCategorias(data);
+        } catch (error) {
+            console.log("Error fetching subcategorias:", error);
+        }
+    };
+
+    const handleModalCategoriaSelect = async (categoriaId: number) => {
+        setNewProductoCategoria(categoriaId);
+        setNewProductoSubcategoria(0); 
+        await fetchSubcategoriasByCategoriaPadre(sucursal.id, categoriaId);
     };
 
     //--------- GET PRODUCTOS POR SUCURSAL ----------
@@ -427,14 +447,37 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                                 placeholder="Ingresa el nombre de Categoria"
                                 value={newProductoCategoria}
                                 required
-                                onChange={(e) => setNewProductoCategoria(Number(e.target.value))}
+                                onChange={(e) => handleModalCategoriaSelect(Number(e.target.value))}
                             >
                                 <option value="">Seleccione una categoria</option>
                                 {categorias.map((categoria) => (
                                     <option key={categoria.id} value={categoria.id}>
                                         {categoria.denominacion}
+                                        
                                     </option>
                                 ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="formSubcategoria">
+                            <Form.Label>Subcategoria</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={newProductoSubcategoria}
+                                required
+                                onChange={(e) => setNewProductoSubcategoria(Number(e.target.value))}
+                            >
+                                {subCategorias.length > 0 ? (
+                                    <>
+                                        <option value="">Seleccione una subcategoria</option>
+                                        {subCategorias.map((subcategoria) => (
+                                            <option key={subcategoria.id} value={subcategoria.id}>
+                                                {subcategoria.denominacion}
+                                            </option>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <option value="">Seleccione una categoria primero</option>
+                                )}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group controlId="formLogo" className={styles.formGroup}>

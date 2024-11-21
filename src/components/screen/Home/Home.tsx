@@ -95,6 +95,7 @@ export const Home = () => {
   };
 
   const handleCloseEmpresa = () => {
+    fetchEmpresas()
     setShowModalEmpresa(false);
   };
 
