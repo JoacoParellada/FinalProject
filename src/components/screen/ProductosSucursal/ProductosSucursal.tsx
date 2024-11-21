@@ -67,7 +67,7 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
                     descripcion: newProductoDescripcion,
                     habilitado: newProductoHabilitado,
                     codigo: newProductoCodigo,
-                    idCategoria: newProductoCategoria,
+                    idCategoria: newProductoSubcategoria,
                     idAlergenos: [],
                     imagenes: newProductoImagen ? [newProductoImagen] : [],
                 })
@@ -93,13 +93,12 @@ export const ProductosSucursal :FC<TablaProductosProps> = ({
     };
 
 
-    const handleCategoriaSelect = async (categoria: ICategorias) => {
+    const handleCategoriaSelect = (categoria: ICategorias) => {
         setCategoriaSeleccionadaId(categoria.id);
-        setNewProductoCategoria(categoria.id); 
-        if (categoria.denominacion === "MENU") {
-            setShowListProductos(true);
-        } else {
-            setShowListProductos(false);
+        if(categoria.denominacion === "MENU"){
+            setShowListProductos(true)
+        }else{
+            setShowListProductos(false)
         }
     };
 
